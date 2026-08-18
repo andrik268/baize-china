@@ -43,7 +43,7 @@ const SOCIAL_ICON_PATHS = {
 
 function SocialIcon({ name, size = 24 }) {
   if (name === "max") {
-    return <img className="social-icon social-icon--max" width={size} height={size} src="/assets/max-logo-official.svg" alt="" aria-hidden="true" />;
+    return <img className="social-icon social-icon--max" width={size} height={size} src="/assets/max-logo-official-colored.svg" alt="" aria-hidden="true" />;
   }
 
   return (

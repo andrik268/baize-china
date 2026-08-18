@@ -1580,7 +1580,14 @@ a:focus-visible,
 }
 
 .floating-social__max {
-  background: #111111 !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.floating-social__max .social-icon {
+  width: 46px;
+  height: 46px;
 }
 
 .floating-social__vk {
