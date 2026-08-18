@@ -5,9 +5,9 @@ import {
   ArrowUpRight,
   BookOpenText,
   Buildings,
+  ChatsCircle,
   Check,
   Clock,
-  DownloadSimple,
   EnvelopeSimple,
   GlobeHemisphereEast,
   GraduationCap,
@@ -17,9 +17,7 @@ import {
   Phone,
   ShieldCheck,
   Sparkle,
-  Student,
   Translate,
-  UsersThree,
   WhatsappLogo,
   X,
 } from "@phosphor-icons/react";
@@ -27,6 +25,7 @@ import {
   programs,
   quizSteps,
   recommendProgram,
+  faqGroups,
   universitySteps,
   visaSteps,
 } from "./data.js";
@@ -35,13 +34,8 @@ const CONTACT_PHONE = "+7 (903) 450-54-43";
 const CONTACT_PHONE_HREF = "tel:+79034505443";
 const WHATSAPP_HREF = "https://wa.me/79034505443";
 const TELEGRAM_HREF = "https://t.me/chinainsummer";
-
-const whyChina = [
-  { icon: GlobeHemisphereEast, title: "Язык будущего", text: "Китайский язык международной бизнес-элиты." },
-  { icon: Buildings, title: "Технологии", text: "Знакомство с IT-гигантами и технопарками." },
-  { icon: Student, title: "Самостоятельность", text: "Международная среда учит адаптивности." },
-  { icon: ShieldCheck, title: "Безопасность", text: "Китай входит в число безопасных стран для учебы." },
-];
+const MAX_HREF = "https://max.ru/";
+const VK_HREF = "https://vk.ru/study.holidays";
 
 function Brand({ light = false }) {
   return (
@@ -98,9 +92,9 @@ function Hero({ openQuiz }) {
     <section className="hero section" id="top">
       <div className="shell hero__grid">
         <div className="hero__copy reveal">
-          <p className="eyebrow">Учеба и каникулы в Китае</p>
-          <h1>Открываем Китай для вас и ваших детей</h1>
-          <p className="hero__lead">Язык, культура и технологии будущего. Полное сопровождение из России и визовая поддержка.</p>
+          <p className="eyebrow">Бай Цзэ</p>
+          <h1>Учеба и каникулы в Китае</h1>
+          <p className="hero__lead">Открываем Китай для вас и ваших детей. Помогаем выбрать вуз и получить грант, организуем каникулы с погружением в язык, культуру и технологии будущего.</p>
           <div className="button-row">
             <a className="button" href="#programs">Смотреть программы <ArrowRight size={18} /></a>
             <button className="button button--ghost" onClick={openQuiz}>Подобрать за 1 минуту</button>
@@ -109,10 +103,6 @@ function Hero({ openQuiz }) {
         <div className="hero__visual reveal reveal--delay">
           <div className="hero__rings" aria-hidden="true" />
           <img src="/assets/hero-campus.webp" alt="Подростки с куратором на современном кампусе в Китае" fetchPriority="high" />
-          <div className="hero__note hero__note--top">
-            <ShieldCheck size={28} />
-            <span><strong>Летим вместе</strong>Сопровождение группы</span>
-          </div>
           <div className="hero__note hero__note--bottom">
             <strong>С 2008 года</strong>
             <span>помогаем учиться за границей</span>
@@ -124,15 +114,21 @@ function Hero({ openQuiz }) {
 }
 
 function WhyChina() {
+  const reasons = [
+    { icon: GlobeHemisphereEast, title: "Образование мирового уровня", text: "Китайские вузы - лидеры международных рейтингов. Дипломы признаются во всём мире." },
+    { icon: Buildings, title: "Умный бюджет", text: "Доступные цены на обучение и проживание. Возможность получить стипендии и гранты." },
+    { icon: Translate, title: "Китайский язык из первоисточника", text: "Ваш ребёнок будет говорить на языке будущего, а не просто учить его по учебникам." },
+    { icon: ShieldCheck, title: "Безопасность и яркие впечатления", text: "Безопасная страна, великая культура, невероятная кухня и друзья со всего света." },
+  ];
   return (
     <section className="section section--compact" aria-labelledby="why-title">
       <div className="shell">
         <div className="heading-stack reveal">
-          <h2 id="why-title">Зачем отправлять ребёнка в Поднебесную?</h2>
-          <p>Поездка становится первым самостоятельным шагом в международное образование.</p>
+          <h2 id="why-title">Почему Китай?</h2>
+          <p>Страна, где современное образование встречается с языком, культурой и безопасной самостоятельностью.</p>
         </div>
         <div className="benefit-grid reveal">
-          {whyChina.map(({ icon: Icon, title, text }) => (
+          {reasons.map(({ icon: Icon, title, text }) => (
             <article className="benefit" key={title}>
               <Icon size={32} weight="duotone" />
               <h3>{title}</h3>
@@ -150,8 +146,8 @@ function Programs({ openProgram }) {
     <section className="section programs" id="programs" aria-labelledby="programs-title">
       <div className="shell">
         <div className="heading-stack reveal">
-          <h2 id="programs-title">Выберите своё приключение</h2>
-          <p>Для детей, студентов и взрослых: от первой поездки в лагерь до знакомства с университетом.</p>
+          <h2 id="programs-title">Каникулы в Китае. Выбери своё приключение</h2>
+          <p>Язык, море, технологии и культура. Подберём программу под возраст, цели и самостоятельность ребёнка.</p>
         </div>
         <div className="program-grid">
           {programs.map((program, index) => (
@@ -211,6 +207,86 @@ function About({ openConsultation }) {
           <p>У нас есть программы под разные цели, возраст и бюджет. Бай Цзэ отвечает за азиатское направление: Китай.</p>
           <p>Расскажем, как поступить в топ-университет, выучить первые иероглифы или провести каникулы от лепки пельменей до диалогов на китайском.</p>
           <button className="button button--light" onClick={openConsultation}>Записаться на консультацию</button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Faq() {
+  return (
+    <section className="section faq" id="faq" aria-labelledby="faq-title">
+      <div className="shell">
+        <div className="heading-stack reveal">
+          <h2 id="faq-title">Обучение в Китае: главные вопросы родителей и студентов</h2>
+          <p>Собрали ответы о языке, выборе города, документах, кампусе и перспективах после выпуска.</p>
+        </div>
+        <div className="faq__groups reveal">
+          {faqGroups.map((group) => (
+            <details className="faq-group" key={group.title}>
+              <summary>
+                <span><strong>{group.title}</strong><small>{group.summary}</small></span>
+                <ArrowRight size={20} />
+              </summary>
+              <div className="faq-group__body">
+                {group.items.map(([question, answer]) => (
+                  <details className="faq-item" key={question}>
+                    <summary><span>{question}</span><ArrowRight size={18} /></summary>
+                    <p>{answer}</p>
+                  </details>
+                ))}
+              </div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Reviews({ openForm }) {
+  return (
+    <section className="section reviews" id="reviews" aria-labelledby="reviews-title">
+      <div className="shell reviews__layout">
+        <div className="reviews__lead reveal">
+          <span className="reviews__mark"><ChatsCircle size={32} weight="duotone" /></span>
+          <h2 id="reviews-title">Отзывы</h2>
+          <p>Мы добавим сюда реальные истории семей после согласования публикации. Для нас важно показывать живой опыт, а не собирать отзывы без разрешения.</p>
+          <button className="button button--ghost" onClick={() => openForm("Запросить отзывы и примеры программ")}>Запросить примеры <ArrowRight size={18} /></button>
+        </div>
+        <div className="reviews__empty reveal">
+          <div className="reviews__quote">“</div>
+          <strong>Ваш отзыв может быть здесь</strong>
+          <p>Расскажите, какой маршрут вы рассматриваете. Мы покажем подходящие истории родителей и студентов.</p>
+          <a className="text-link" href={VK_HREF} target="_blank" rel="noreferrer">Смотреть новости во ВКонтакте <ArrowUpRight size={18} /></a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Cases({ openForm }) {
+  const cases = [
+    ["Поступление в вуз", "Подбираем город, специальность и университет под профиль студента, бюджет и цели.", GraduationCap],
+    ["Каникулы в Китае", "Организуем группу, встречу, проживание и программу с языком, культурой или технологиями.", GlobeHemisphereEast],
+    ["Китайский язык", "Составляем маршрут от первого иероглифа до подготовки к HSK и учебы в Китае.", Translate],
+  ];
+  return (
+    <section className="section cases" id="cases" aria-labelledby="cases-title">
+      <div className="shell">
+        <div className="heading-stack reveal">
+          <h2 id="cases-title">Кейсы</h2>
+          <p>Показываем не обещания, а понятные маршруты, которые собираем под конкретную семью.</p>
+        </div>
+        <div className="cases__grid">
+          {cases.map(([title, text, Icon]) => (
+            <article className="case-card reveal" key={title}>
+              <span className="case-card__icon"><Icon size={28} weight="duotone" /></span>
+              <h3>{title}</h3>
+              <p>{text}</p>
+              <button className="text-link" onClick={() => openForm(`Запросить кейс: ${title}`)}>Запросить маршрут <ArrowRight size={18} /></button>
+            </article>
+          ))}
         </div>
       </div>
     </section>
@@ -330,7 +406,7 @@ function Footer({ setLegal }) {
       <div className="shell footer__grid">
         <div><Brand light /><p>Учеба, языковые программы и каникулы в Китае с полным сопровождением.</p></div>
         <div><h3>Направления</h3><a href="#programs">Каникулы</a><a href="#university">Поступление</a><a href="#language">Китайский язык</a><a href="#visa">Визы</a></div>
-        <div><h3>Связаться</h3><a href={WHATSAPP_HREF} target="_blank" rel="noreferrer">WhatsApp</a><a href={TELEGRAM_HREF} target="_blank" rel="noreferrer">Telegram</a><a href="https://vk.ru/study.holidays" target="_blank" rel="noreferrer">ВКонтакте</a></div>
+        <div><h3>Связаться</h3><a href={WHATSAPP_HREF} target="_blank" rel="noreferrer">WhatsApp</a><a href={TELEGRAM_HREF} target="_blank" rel="noreferrer">Telegram</a><a href={MAX_HREF} target="_blank" rel="noreferrer"><span className="social-word social-word--max">MAX</span> MAX</a><a href={VK_HREF} target="_blank" rel="noreferrer"><span className="social-word social-word--vk">VK</span> ВКонтакте</a></div>
         <div><h3>Документы</h3><button onClick={() => setLegal("privacy")}>Политика ПДн</button><button onClick={() => setLegal("offer")}>Публичная оферта</button><p>ИП Лазаренко Наталья Леонидовна<br />ИНН 231009681142</p></div>
       </div>
       <div className="shell footer__bottom"><span>© 2026 Бай Цзэ</span><span>Краснодар, ул. Красная 160</span></div>
@@ -487,6 +563,14 @@ export default function App() {
   const [program, setProgram] = useState(null);
   const [form, setForm] = useState(null);
   const [legal, setLegal] = useState(null);
+  const [palette] = useState(() => {
+    const value = new URLSearchParams(window.location.search).get("palette");
+    return ["terracotta", "jade", "vermilion"].includes(value) ? value : "terracotta";
+  });
+
+  useEffect(() => {
+    document.documentElement.dataset.palette = palette;
+  }, [palette]);
 
   useEffect(() => {
     const items = document.querySelectorAll(".reveal");
@@ -508,6 +592,7 @@ export default function App() {
         <Programs openProgram={setProgram} />
         <Safety />
         <About openConsultation={() => setForm({ title: "Бесплатная консультация", goal: "" })} />
+        <Faq />
         <DetailSection
           id="university" icon={GraduationCap}
           title="Китай: образовательный хаб XXI века"
@@ -527,11 +612,18 @@ export default function App() {
           button="Консультация по визе" image="/assets/airport-support.webp" openForm={(title) => setForm({ title, goal: "Визовое сопровождение" })}
         />
         <Language openForm={(title) => setForm({ title, goal: "Китайский язык" })} />
+        <Reviews openForm={(title) => setForm({ title, goal: "" })} />
+        <Cases openForm={(title) => setForm({ title, goal: "" })} />
         <QuizBanner openQuiz={() => setQuizOpen(true)} />
         <Contacts openForm={(title) => setForm({ title, goal: "" })} />
       </main>
       <Footer setLegal={setLegal} />
-      <div className="floating-social" aria-label="Быстрая связь"><a href={WHATSAPP_HREF} target="_blank" rel="noreferrer" aria-label="Написать в WhatsApp"><WhatsappLogo size={24} weight="fill" /></a><a href={TELEGRAM_HREF} target="_blank" rel="noreferrer" aria-label="Написать в Telegram"><PaperPlaneTilt size={22} weight="fill" /></a></div>
+      <div className="floating-social" aria-label="Быстрая связь">
+        <a href={WHATSAPP_HREF} target="_blank" rel="noreferrer" aria-label="Написать в WhatsApp"><WhatsappLogo size={24} weight="fill" /></a>
+        <a href={TELEGRAM_HREF} target="_blank" rel="noreferrer" aria-label="Написать в Telegram"><PaperPlaneTilt size={22} weight="fill" /></a>
+        <a className="floating-social__text floating-social__text--max" href={MAX_HREF} target="_blank" rel="noreferrer" aria-label="Написать в MAX">MAX</a>
+        <a className="floating-social__text floating-social__text--vk" href={VK_HREF} target="_blank" rel="noreferrer" aria-label="Открыть ВКонтакте">VK</a>
+      </div>
       {quizOpen && <QuizModal onClose={() => setQuizOpen(false)} />}
       {program && <ProgramModal program={program} onClose={() => setProgram(null)} openQuiz={() => setQuizOpen(true)} />}
       {form && <Modal onClose={() => setForm(null)} className="form-modal"><LeadForm title={form.title} defaultGoal={form.goal} onClose={() => setForm(null)} /></Modal>}
