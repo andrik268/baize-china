@@ -1440,60 +1440,12 @@ a:focus-visible,
   background: var(--sky-strong);
 }
 
-.contacts__map::before,
-.contacts__map::after,
-.map__roads {
-  content: "";
+.contacts__map iframe {
   position: absolute;
-  background: rgba(251, 253, 255, 0.9);
-  box-shadow: 0 0 0 1px rgba(174, 193, 207, 0.65);
-}
-
-.contacts__map::before {
-  width: 130%;
-  height: 54px;
-  top: 37%;
-  left: -15%;
-  transform: rotate(-12deg);
-}
-
-.contacts__map::after {
-  width: 54px;
-  height: 130%;
-  top: -15%;
-  left: 57%;
-  transform: rotate(18deg);
-}
-
-.map__roads {
-  width: 50px;
-  height: 130%;
-  top: -15%;
-  left: 18%;
-  transform: rotate(-8deg);
-}
-
-.map__pin {
-  position: absolute;
-  z-index: 2;
-  top: 42%;
-  left: 48%;
-  display: grid;
-  justify-items: center;
-  padding: 15px 20px;
-  border-radius: var(--radius);
-  background: var(--surface);
-  box-shadow: var(--shadow);
-}
-
-.map__pin svg {
-  margin-top: -34px;
-  color: var(--terracotta);
-}
-
-.map__pin span {
-  color: var(--ink-muted);
-  font-size: 0.8rem;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
 
 .contacts__map > a {
@@ -1558,6 +1510,18 @@ a:focus-visible,
   color: var(--white);
 }
 
+.footer__social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.footer__social-link .social-icon {
+  flex: 0 0 auto;
+  color: currentColor;
+  fill: currentColor;
+}
+
 .footer__grid > div:last-child p {
   margin: 10px 0 0;
   color: rgba(251, 253, 255, 0.5);
@@ -1597,21 +1561,29 @@ a:focus-visible,
 }
 
 .floating-social a:nth-child(2) {
-  background: var(--blue);
+  background: #26a5e4;
 }
 
-.floating-social__text {
-  font-size: 0.62rem;
-  font-weight: 800;
-  letter-spacing: -0.04em;
+.floating-social__whatsapp {
+  background: #25d366 !important;
 }
 
-.floating-social__text--max {
-  background: var(--terracotta);
+.floating-social__telegram {
+  background: #26a5e4 !important;
 }
 
-.floating-social__text--vk {
-  background: var(--blue);
+.floating-social__max {
+  background: #111111 !important;
+}
+
+.floating-social__vk {
+  background: #0077ff !important;
+}
+
+.floating-social .social-icon {
+  display: block;
+  color: var(--white);
+  fill: currentColor;
 }
 
 .floating-social a:hover {
