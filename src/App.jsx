@@ -42,6 +42,10 @@ const SOCIAL_ICON_PATHS = {
 };
 
 function SocialIcon({ name, size = 24 }) {
+  if (name === "max") {
+    return <img className="social-icon social-icon--max" width={size} height={size} src="/assets/max-logo-official.svg" alt="" aria-hidden="true" />;
+  }
+
   return (
     <svg className={`social-icon social-icon--${name}`} width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
       <path d={SOCIAL_ICON_PATHS[name]} />
@@ -52,7 +56,15 @@ function SocialIcon({ name, size = 24 }) {
 function Brand({ light = false }) {
   return (
     <a className={`brand ${light ? "brand--light" : ""}`} href="#top">
-      <span className="brand__mark" aria-hidden="true">白泽</span>
+      <span className="brand__mark" aria-hidden="true">
+        <svg viewBox="0 0 48 48" role="presentation">
+          <circle cx="24" cy="24" r="19" fill="none" stroke="currentColor" strokeWidth="1.2" opacity=".24" />
+          <path d="M9 31c3.9-9.8 10.4-15 19.2-15 4.2 0 7.9 1.2 10.8 3.5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+          <path d="M10.5 35.2c6.6-2.5 14.4-2.2 22.8 2.1" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" opacity=".78" />
+          <circle cx="34.3" cy="11.6" r="3.2" fill="#e1b450" />
+          <text x="24" y="30" textAnchor="middle" fill="currentColor" fontSize="9.2" fontWeight="800" letterSpacing=".4">白泽</text>
+        </svg>
+      </span>
       <span className="brand__copy">
         <strong>Бай Цзэ</strong>
         <small>Учеба и каникулы в Китае</small>
