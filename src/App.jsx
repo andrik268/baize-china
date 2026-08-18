@@ -53,9 +53,10 @@ function Header({ openQuiz }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const links = [
     ["Поступление", "#university"],
-    ["Каникулы", "#programs"],
-    ["Курсы", "#language"],
     ["Визы", "#visa"],
+    ["Каникулы", "#programs"],
+    ["Сопровождение", "#safety"],
+    ["Курсы", "#language"],
     ["О нас", "#about"],
   ];
 
@@ -135,6 +136,47 @@ function WhyChina() {
               <p>{text}</p>
             </article>
           ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function StudyAbroad({ openForm }) {
+  const fears = [
+    ["Не знаем, с чего начать", "Разложим поступление по шагам и объясним, какие решения нужны сейчас."],
+    ["Боимся ошибиться с вузом", "Сравним города, программы, бюджет и требования, чтобы выбор был осознанным."],
+    ["Переживаем за ребёнка", "Расскажем про кампус, быт, связь с куратором и поддержку на каждом этапе."],
+    ["Не понимаем, как всё оплатить", "Подскажем варианты грантов, стипендий и планирования расходов."],
+  ];
+
+  return (
+    <section className="section study-abroad" id="study-abroad" aria-labelledby="study-abroad-title">
+      <div className="shell">
+        <div className="heading-stack reveal">
+          <h2 id="study-abroad-title">Хочу учиться за границей</h2>
+          <p>Поступление в Китай - большой шаг для всей семьи. Мы помогаем превратить тревогу и вопросы в понятный план.</p>
+        </div>
+        <div className="study-abroad__grid">
+          <div className="study-abroad__media reveal">
+            <img src="/assets/chengdu-family.webp" alt="Студенты и куратор на кампусе в Китае" loading="lazy" />
+            <div className="study-abroad__caption"><strong>Поддержка семьи</strong><span>От первого разговора до адаптации в кампусе</span></div>
+          </div>
+          <div className="study-abroad__fears reveal">
+            {fears.map(([title, text], index) => (
+              <article key={title}>
+                <span>0{index + 1}</span>
+                <div><h3>{title}</h3><p>{text}</p></div>
+              </article>
+            ))}
+          </div>
+        </div>
+        <div className="study-abroad__cta reveal">
+          <div>
+            <h3>Даже если сейчас не понятно, где учиться и как всё организовать - это нормально</h3>
+            <p>Запишитесь на бесплатную консультацию и получите персональный пошаговый план поступления.</p>
+          </div>
+          <button className="button" onClick={() => openForm("Бесплатная консультация по поступлению")}>Записаться на бесплатную консультацию <ArrowRight size={18} /></button>
         </div>
       </div>
     </section>
@@ -265,26 +307,26 @@ function Reviews({ openForm }) {
   );
 }
 
-function Cases({ openForm }) {
+function Cases() {
   const cases = [
-    ["Поступление в вуз", "Подбираем город, специальность и университет под профиль студента, бюджет и цели.", GraduationCap],
-    ["Каникулы в Китае", "Организуем группу, встречу, проживание и программу с языком, культурой или технологиями.", GlobeHemisphereEast],
-    ["Китайский язык", "Составляем маршрут от первого иероглифа до подготовки к HSK и учебы в Китае.", Translate],
+    ["Поступление в вуз", "Здесь разместим скриншот или видео отзыва семьи после согласования публикации.", "/assets/hero-campus.webp", GraduationCap],
+    ["Каникулы в Китае", "Здесь разместим историю поездки, фото и видео группы с разрешения участников.", "/assets/chengdu-family.webp", GlobeHemisphereEast],
+    ["Китайский язык", "Здесь разместим отзыв ученика о занятиях и прогрессе в китайском языке.", "/assets/hainan-language.webp", Translate],
   ];
   return (
     <section className="section cases" id="cases" aria-labelledby="cases-title">
       <div className="shell">
         <div className="heading-stack reveal">
           <h2 id="cases-title">Кейсы</h2>
-          <p>Показываем не обещания, а понятные маршруты, которые собираем под конкретную семью.</p>
+          <p>Добавим сюда реальные скриншоты, видео и истории семей после согласования публикации.</p>
         </div>
         <div className="cases__grid">
-          {cases.map(([title, text, Icon]) => (
+          {cases.map(([title, text, image, Icon]) => (
             <article className="case-card reveal" key={title}>
+              <img className="case-card__image" src={image} alt="" loading="lazy" />
               <span className="case-card__icon"><Icon size={28} weight="duotone" /></span>
               <h3>{title}</h3>
               <p>{text}</p>
-              <button className="text-link" onClick={() => openForm(`Запросить кейс: ${title}`)}>Запросить маршрут <ArrowRight size={18} /></button>
             </article>
           ))}
         </div>
@@ -405,7 +447,7 @@ function Footer({ setLegal }) {
     <footer className="footer">
       <div className="shell footer__grid">
         <div><Brand light /><p>Учеба, языковые программы и каникулы в Китае с полным сопровождением.</p></div>
-        <div><h3>Направления</h3><a href="#programs">Каникулы</a><a href="#university">Поступление</a><a href="#language">Китайский язык</a><a href="#visa">Визы</a></div>
+        <div><h3>Направления</h3><a href="#university">Поступление</a><a href="#visa">Визы</a><a href="#programs">Каникулы</a><a href="#safety">Сопровождение</a><a href="#language">Китайский язык</a></div>
         <div><h3>Связаться</h3><a href={WHATSAPP_HREF} target="_blank" rel="noreferrer">WhatsApp</a><a href={TELEGRAM_HREF} target="_blank" rel="noreferrer">Telegram</a><a href={MAX_HREF} target="_blank" rel="noreferrer"><span className="social-word social-word--max">MAX</span> MAX</a><a href={VK_HREF} target="_blank" rel="noreferrer"><span className="social-word social-word--vk">VK</span> ВКонтакте</a></div>
         <div><h3>Документы</h3><button onClick={() => setLegal("privacy")}>Политика ПДн</button><button onClick={() => setLegal("offer")}>Публичная оферта</button><p>ИП Лазаренко Наталья Леонидовна<br />ИНН 231009681142</p></div>
       </div>
@@ -563,14 +605,6 @@ export default function App() {
   const [program, setProgram] = useState(null);
   const [form, setForm] = useState(null);
   const [legal, setLegal] = useState(null);
-  const [palette] = useState(() => {
-    const value = new URLSearchParams(window.location.search).get("palette");
-    return ["terracotta", "jade", "vermilion"].includes(value) ? value : "terracotta";
-  });
-
-  useEffect(() => {
-    document.documentElement.dataset.palette = palette;
-  }, [palette]);
 
   useEffect(() => {
     const items = document.querySelectorAll(".reveal");
@@ -589,10 +623,7 @@ export default function App() {
       <main>
         <Hero openQuiz={() => setQuizOpen(true)} />
         <WhyChina />
-        <Programs openProgram={setProgram} />
-        <Safety />
-        <About openConsultation={() => setForm({ title: "Бесплатная консультация", goal: "" })} />
-        <Faq />
+        <StudyAbroad openForm={(title) => setForm({ title, goal: "Поступление в вуз" })} />
         <DetailSection
           id="university" icon={GraduationCap}
           title="Китай: образовательный хаб XXI века"
@@ -602,6 +633,8 @@ export default function App() {
           included={["Персональный куратор", "Подача в 3-5 университетов", "Подготовка документов", "Помощь с грантом", "Студенческая виза", "Встреча и адаптация"]}
           button="Записаться на консультацию" openForm={(title) => setForm({ title, goal: "Поступление в вуз" })}
         />
+        <About openConsultation={() => setForm({ title: "Бесплатная консультация", goal: "" })} />
+        <Faq />
         <DetailSection
           id="visa" icon={BookOpenText} reverse
           title="Пока вы собираете чемоданы, мы открываем визу"
@@ -611,9 +644,11 @@ export default function App() {
           included={["Проверка документов", "Заполнение анкеты", "Медицинская страховка", "Запись в визовый центр", "Контроль сроков", "Передача паспорта"]}
           button="Консультация по визе" image="/assets/airport-support.webp" openForm={(title) => setForm({ title, goal: "Визовое сопровождение" })}
         />
+        <Programs openProgram={setProgram} />
+        <Safety />
         <Language openForm={(title) => setForm({ title, goal: "Китайский язык" })} />
         <Reviews openForm={(title) => setForm({ title, goal: "" })} />
-        <Cases openForm={(title) => setForm({ title, goal: "" })} />
+        <Cases />
         <QuizBanner openQuiz={() => setQuizOpen(true)} />
         <Contacts openForm={(title) => setForm({ title, goal: "" })} />
       </main>
