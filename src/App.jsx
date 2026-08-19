@@ -575,7 +575,7 @@ function ProgramModal({ program, onClose, openForm }) {
         <small>{program.meta}</small><h2>{program.title}</h2><p>{program.description}</p>
         <div><Sparkle size={20} /><span><strong>Кому подойдёт</strong>{program.fit}</span></div>
         <p>Даты, стоимость, точная программа и условия участия подтверждаются менеджером после короткой консультации.</p>
-        <button className="button" onClick={() => { onClose(); openForm(`Получить презентацию: ${program.title}`); }}>Получить презентацию <ArrowRight size={18} /></button>
+        <button className="button button--wide program-modal__cta" onClick={() => { onClose(); openForm(`Получить презентацию: ${program.title}`); }}>Получить презентацию <ArrowRight size={18} /></button>
       </div>
     </Modal>
   );

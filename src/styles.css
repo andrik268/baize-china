@@ -459,14 +459,7 @@ a:focus-visible,
 }
 
 .hero__visual::after {
-  content: "";
-  position: absolute;
-  inset: auto 0 0 auto;
-  width: 44%;
-  height: 22%;
-  border-radius: var(--radius);
-  background: var(--blue-dark);
-  box-shadow: var(--shadow);
+  display: none;
 }
 
 .hero__rings {
@@ -521,13 +514,14 @@ a:focus-visible,
 }
 
 .hero__note--bottom {
-  right: 30px;
+  right: 0;
   bottom: 28px;
   width: 44%;
   min-height: 88px;
   display: grid;
   align-content: center;
   padding: 18px 22px;
+  background: var(--blue-dark);
   color: var(--white);
 }
 
@@ -656,6 +650,7 @@ a:focus-visible,
 
 .universities {
   background: var(--surface);
+  scroll-margin-top: 132px;
 }
 
 .universities__intro {
@@ -688,6 +683,7 @@ a:focus-visible,
   display: grid;
   gap: 12px;
   max-width: 1120px;
+  padding-top: 18px;
 }
 
 .university-accordion {
@@ -1837,6 +1833,14 @@ a:focus-visible,
   overflow: auto;
 }
 
+.program-modal > .modal__close {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  float: none;
+  margin: 0;
+}
+
 .program-modal > img {
   width: 100%;
   height: 100%;
@@ -1886,6 +1890,10 @@ a:focus-visible,
 
 .program-modal__copy > div strong {
   color: var(--ink);
+}
+
+.program-modal__cta {
+  margin-top: 4px;
 }
 
 .quiz-modal {
