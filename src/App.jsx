@@ -24,6 +24,7 @@ import {
   recommendProgram,
   faqGroups,
   universitySteps,
+  universityGroups,
   visaSteps,
 } from "./data.js";
 
@@ -76,7 +77,7 @@ function Brand({ light = false }) {
 function Header({ openQuiz }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const links = [
-    ["Поступление", "#university"],
+    ["Университеты", "#universities"],
     ["Визы", "#visa"],
     ["Каникулы", "#programs"],
     ["Сопровождение", "#safety"],
@@ -119,7 +120,11 @@ function Hero({ openQuiz }) {
         <div className="hero__copy reveal">
           <p className="eyebrow">Бай Цзэ</p>
           <h1>Учеба и каникулы в Китае</h1>
-          <p className="hero__lead">Открываем Китай для вас и ваших детей. Помогаем выбрать вуз и получить грант, организуем каникулы с погружением в язык, культуру и технологии будущего.</p>
+          <p className="hero__lead">Открываем Китай для вас и ваших детей</p>
+          <div className="hero__services">
+            <span>Помогаем выбрать вуз и получить грант</span>
+            <span>Организуем каникулы мечты с погружением в язык, культуру и технологии будущего</span>
+          </div>
           <div className="button-row">
             <a className="button" href="#programs">Смотреть программы <ArrowRight size={18} /></a>
             <button className="button button--ghost" onClick={openQuiz}>Подобрать за 1 минуту</button>
@@ -177,23 +182,17 @@ function StudyAbroad({ openForm }) {
   return (
     <section className="section study-abroad" id="study-abroad" aria-labelledby="study-abroad-title">
       <div className="shell">
-        <div className="heading-stack reveal">
+        <div className="study-abroad__heading reveal">
           <h2 id="study-abroad-title">Хочу учиться за границей</h2>
           <p>Поступление в Китай - большой шаг для всей семьи. Мы помогаем превратить тревогу и вопросы в понятный план.</p>
         </div>
-        <div className="study-abroad__grid">
-          <div className="study-abroad__media reveal">
-            <img src="/assets/chengdu-family.webp" alt="Студенты и куратор на кампусе в Китае" loading="lazy" />
-            <div className="study-abroad__caption"><strong>Поддержка семьи</strong><span>От первого разговора до адаптации в кампусе</span></div>
-          </div>
-          <div className="study-abroad__fears reveal">
-            {fears.map(([title, text], index) => (
-              <article key={title}>
-                <span>0{index + 1}</span>
-                <div><h3>{title}</h3><p>{text}</p></div>
-              </article>
-            ))}
-          </div>
+        <div className="study-abroad__fears reveal">
+          {fears.map(([title, text], index) => (
+            <article key={title}>
+              <span>0{index + 1}</span>
+              <div><h3>{title}</h3><p>{text}</p></div>
+            </article>
+          ))}
         </div>
         <div className="study-abroad__cta reveal">
           <div>
@@ -201,6 +200,36 @@ function StudyAbroad({ openForm }) {
             <p>Запишитесь на бесплатную консультацию и получите персональный пошаговый план поступления.</p>
           </div>
           <button className="button" onClick={() => openForm("Бесплатная консультация по поступлению")}>Записаться на бесплатную консультацию <ArrowRight size={18} /></button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Universities() {
+  return (
+    <section className="section universities" id="universities" aria-labelledby="universities-title">
+      <div className="shell">
+        <div className="universities__intro reveal">
+          <div>
+            <p className="eyebrow">Поступление в Китай</p>
+            <h2 id="universities-title">Университеты Китая</h2>
+            <p>Мечтаете изучать китайский язык и культуру, инженерию, журналистику, науки и технологии, медицину или любой другой предмет - в китайских университетах вы обязательно найдете подходящую программу!</p>
+            <p>В мировой рейтинг QS World University Rankings вошел 71 университет Китая. Таким образом, в национальный топ-10 вошли не только лучшие, но и самые популярные среди иностранных студентов вузы Китая.</p>
+          </div>
+          <img src="/assets/hero-campus.webp" alt="Студенты на территории китайского университета" loading="lazy" />
+        </div>
+        <div className="universities__accordions reveal">
+          {universityGroups.map((group) => (
+            <details className="university-accordion" key={group.title}>
+              <summary><span><strong>{group.title}</strong><small>{group.summary}</small></span><b aria-hidden="true">+</b></summary>
+              <div className="university-accordion__body">
+                {group.items.map(([title, text]) => (
+                  <article key={title}><h3>{title}</h3><p>{text}</p></article>
+                ))}
+              </div>
+            </details>
+          ))}
         </div>
       </div>
     </section>
@@ -475,7 +504,7 @@ function Footer({ setLegal }) {
     <footer className="footer">
       <div className="shell footer__grid">
         <div><Brand light /><p>Учеба, языковые программы и каникулы в Китае с полным сопровождением.</p></div>
-        <div><h3>Направления</h3><a href="#university">Поступление</a><a href="#visa">Визы</a><a href="#programs">Каникулы</a><a href="#safety">Сопровождение</a><a href="#language">Китайский язык</a></div>
+        <div><h3>Направления</h3><a href="#universities">Университеты</a><a href="#university">Как поступить</a><a href="#visa">Визы</a><a href="#programs">Каникулы</a><a href="#safety">Сопровождение</a><a href="#language">Китайский язык</a></div>
         <div><h3>Связаться</h3><a className="footer__social-link" href={WHATSAPP_HREF} target="_blank" rel="noreferrer"><SocialIcon name="whatsapp" size={18} />WhatsApp</a><a className="footer__social-link" href={TELEGRAM_HREF} target="_blank" rel="noreferrer"><SocialIcon name="telegram" size={18} />Telegram</a><a className="footer__social-link" href={MAX_HREF} target="_blank" rel="noreferrer"><SocialIcon name="max" size={18} />MAX</a><a className="footer__social-link" href={VK_HREF} target="_blank" rel="noreferrer"><SocialIcon name="vk" size={18} />ВКонтакте</a></div>
         <div><h3>Документы</h3><button onClick={() => setLegal("privacy")}>Политика ПДн</button><button onClick={() => setLegal("offer")}>Публичная оферта</button><p>ИП Лазаренко Наталья Леонидовна<br />ИНН 231009681142</p></div>
       </div>
@@ -538,7 +567,7 @@ function LeadForm({ title, onClose, defaultGoal = "" }) {
   );
 }
 
-function ProgramModal({ program, onClose, openQuiz }) {
+function ProgramModal({ program, onClose, openForm }) {
   return (
     <Modal onClose={onClose} className="program-modal">
       <img src={program.image} alt="" />
@@ -546,7 +575,7 @@ function ProgramModal({ program, onClose, openQuiz }) {
         <small>{program.meta}</small><h2>{program.title}</h2><p>{program.description}</p>
         <div><Sparkle size={20} /><span><strong>Кому подойдёт</strong>{program.fit}</span></div>
         <p>Даты, стоимость, точная программа и условия участия подтверждаются менеджером после короткой консультации.</p>
-        <button className="button" onClick={() => { onClose(); openQuiz(); }}>Подобрать программу</button>
+        <button className="button" onClick={() => { onClose(); openForm(`Получить презентацию: ${program.title}`); }}>Получить презентацию <ArrowRight size={18} /></button>
       </div>
     </Modal>
   );
@@ -652,6 +681,7 @@ export default function App() {
         <Hero openQuiz={() => setQuizOpen(true)} />
         <WhyChina />
         <StudyAbroad openForm={(title) => setForm({ title, goal: "Поступление в вуз" })} />
+        <Universities />
         <DetailSection
           id="university" icon={GraduationCap}
           title="Китай: образовательный хаб XXI века"
@@ -688,7 +718,7 @@ export default function App() {
         <a className="floating-social__vk" href={VK_HREF} target="_blank" rel="noreferrer" aria-label="Открыть ВКонтакте"><SocialIcon name="vk" size={25} /></a>
       </div>
       {quizOpen && <QuizModal onClose={() => setQuizOpen(false)} />}
-      {program && <ProgramModal program={program} onClose={() => setProgram(null)} openQuiz={() => setQuizOpen(true)} />}
+      {program && <ProgramModal program={program} onClose={() => setProgram(null)} openForm={(title) => setForm({ title, goal: "Каникулы в Китае" })} />}
       {form && <Modal onClose={() => setForm(null)} className="form-modal"><LeadForm title={form.title} defaultGoal={form.goal} onClose={() => setForm(null)} /></Modal>}
       {legal && <LegalModal type={legal} onClose={() => setLegal(null)} />}
     </>
