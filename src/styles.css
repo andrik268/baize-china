@@ -157,9 +157,9 @@ h3 {
   justify-content: center;
   gap: 10px;
   padding: 0 24px;
-  border: 1px solid var(--terracotta);
+  border: 1px solid var(--blue);
   border-radius: 999px;
-  background: var(--terracotta);
+  background: var(--blue);
   color: var(--white);
   font-weight: 600;
   white-space: nowrap;
@@ -168,8 +168,8 @@ h3 {
 }
 
 .button:hover {
-  background: var(--terracotta-dark);
-  border-color: var(--terracotta-dark);
+  background: var(--blue-dark);
+  border-color: var(--blue-dark);
   transform: translateY(-2px);
 }
 
@@ -197,35 +197,35 @@ a:focus-visible,
 .button--ghost {
   border-color: var(--line);
   background: color-mix(in srgb, var(--surface) 80%, transparent);
-  color: var(--terracotta-dark);
+  color: var(--blue-dark);
 }
 
 .button--ghost:hover {
   background: var(--white);
-  color: var(--terracotta-dark);
-  border-color: var(--terracotta);
+  color: var(--blue-dark);
+  border-color: var(--blue);
 }
 
 .button--terracotta {
-  border-color: var(--terracotta);
-  background: var(--terracotta);
+  border-color: var(--blue);
+  background: var(--blue);
 }
 
 .button--terracotta:hover {
-  border-color: var(--terracotta-dark);
-  background: var(--terracotta-dark);
+  border-color: var(--blue-dark);
+  background: var(--blue-dark);
 }
 
 .button--light {
-  border-color: var(--terracotta);
-  background: var(--terracotta);
-  color: var(--white);
+  border-color: var(--white);
+  background: var(--white);
+  color: var(--blue-dark);
 }
 
 .button--light:hover {
-  border-color: var(--terracotta-dark);
-  background: var(--terracotta-dark);
-  color: var(--white);
+  border-color: #fff;
+  background: #fff;
+  color: var(--blue-dark);
 }
 
 .button--wide {
@@ -1570,16 +1570,10 @@ a:focus-visible,
   gap: 8px;
   padding: 13px 16px;
   border-radius: 999px;
-  background: var(--terracotta);
+  background: var(--blue);
   color: var(--white);
   font-size: 0.87rem;
   font-weight: 600;
-  transition: background 180ms ease, transform 180ms ease;
-}
-
-.contacts__map > a:hover {
-  background: var(--terracotta-dark);
-  transform: translateY(-2px);
 }
 
 .footer {
