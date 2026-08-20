@@ -4,7 +4,7 @@ import { getRemoteSession, loadRemoteCms, loadRemoteLeads, loginRemote, logoutRe
 import { ADMIN_LOGIN, CMS_SESSION_KEY, cloneCmsData, defaultCmsData, mergeCmsData } from "./cmsData.js";
 
 const SECTIONS = [
-  ["header", "Шапка сайта"], ["hero", "Первый экран"], ["why", "Почему Китай"], ["studyAbroad", "Поступление"], ["universities", "Университеты"], ["university", "Поступление в вуз"], ["about", "О компании"], ["faq", "Вопросы и ответы"], ["visa", "Визы"], ["programs", "Каникулы"], ["safety", "Сопровождение"], ["language", "Курсы китайского"], ["reviews", "Отзывы"], ["cases", "Кейсы"], ["quiz", "Персональный подбор"], ["contacts", "Контакты"], ["footer", "Подвал"], ["leads", "Заявки"],
+  ["leads", "Заявки"], ["header", "Шапка сайта"], ["hero", "Первый экран"], ["why", "Почему Китай"], ["studyAbroad", "Поступление"], ["universities", "Университеты"], ["university", "Поступление в вуз"], ["about", "О компании"], ["faq", "Вопросы и ответы"], ["visa", "Визы"], ["programs", "Каникулы"], ["safety", "Сопровождение"], ["language", "Курсы китайского"], ["reviews", "Отзывы"], ["cases", "Кейсы"], ["quiz", "Персональный подбор"], ["contacts", "Контакты"], ["footer", "Подвал"],
 ];
 
 const labelize = (key) => ({
@@ -78,7 +78,7 @@ function LeadsPanel({ leads, loading, onRefresh }) {
 }
 
 export function AdminApp() {
-  const [user, setUser] = useState(null); const [data, setData] = useState(defaultCmsData); const [activeId, setActiveId] = useState("hero"); const [status, setStatus] = useState(""); const [loading, setLoading] = useState(true); const [saving, setSaving] = useState(false); const [leads, setLeads] = useState([]); const [leadsLoading, setLeadsLoading] = useState(false);
+  const [user, setUser] = useState(null); const [data, setData] = useState(defaultCmsData); const [activeId, setActiveId] = useState("leads"); const [status, setStatus] = useState(""); const [loading, setLoading] = useState(true); const [saving, setSaving] = useState(false); const [leads, setLeads] = useState([]); const [leadsLoading, setLeadsLoading] = useState(false);
   const activeBlock = useMemo(() => data.page.blocks.find((block) => block.id === activeId) || data.page.blocks[0], [data, activeId]);
   useEffect(() => { Promise.all([getRemoteSession().catch(() => null), loadRemoteCms()]).then(([session, remote]) => { setUser(session); setData(mergeCmsData(remote)); }).finally(() => setLoading(false)); }, []);
   useEffect(() => { if (!user) return; setLeadsLoading(true); loadRemoteLeads().then(setLeads).catch(() => setLeads([])).finally(() => setLeadsLoading(false)); }, [user]);
@@ -90,7 +90,7 @@ export function AdminApp() {
   if (!user) return <LoginScreen onLogin={login} />;
   const update = (path, value) => setData((current) => setPath(current, path, value));
   return <div className="cms-shell">
-    <aside className="cms-sidebar"><div className="cms-sidebar-brand"><span>白泽</span><div><strong>Бай Цзэ</strong><small>Редактор сайта</small></div></div><nav>{SECTIONS.map(([id, label]) => <button key={id} className={id === activeId ? "is-active" : ""} onClick={() => setActiveId(id)}>{label}</button>)}</nav><div className="cms-sidebar-bottom"><a href="/" target="_blank" rel="noreferrer">Открыть сайт <ArrowSquareOut size={16} /></a><button onClick={logout}><SignOut size={16} /> Выйти</button></div></aside>
+    <aside className="cms-sidebar"><div className="cms-sidebar-brand"><span>白泽</span><div><strong>Бай Цзэ</strong><small>Редактор сайта</small></div></div><nav>{SECTIONS.map(([id, label]) => <button key={id} className={`${id === activeId ? "is-active" : ""}${id === "leads" ? " cms-nav-leads" : ""}`} onClick={() => setActiveId(id)}>{label}{id === "leads" && leads.length > 0 ? <span className="cms-nav-leads-count">{leads.length}</span> : null}</button>)}</nav><div className="cms-sidebar-bottom"><a href="/" target="_blank" rel="noreferrer">Открыть сайт <ArrowSquareOut size={16} /></a><button onClick={logout}><SignOut size={16} /> Выйти</button></div></aside>
     <main className="cms-main"><header className="cms-topbar"><div><p className="cms-kicker">Админка / Бай Цзэ</p><h1>Редактор контента</h1></div><div className="cms-top-actions">{status ? <span className={status === "Сохранено" ? "cms-saved" : "cms-error"}>{status === "Сохранено" ? <Check size={17} /> : null}{status}</span> : null}{activeId !== "leads" ? <button className="cms-button cms-button--primary" onClick={save} disabled={saving}><FloppyDisk size={18} />{saving ? "Сохраняем…" : "Сохранить изменения"}</button> : null}</div></header><section className="cms-editor"><div className="cms-editor-intro"><span className="cms-section-number">{String(SECTIONS.findIndex(([id]) => id === activeId) + 1).padStart(2, "0")}</span><div><h2>{SECTIONS.find(([id]) => id === activeId)?.[1] || activeBlock.title}</h2><p>{activeId === "leads" ? "Здесь отображаются обращения посетителей сайта." : "Меняйте значения ниже и нажмите «Сохранить изменения». Фото можно загрузить прямо с компьютера."}</p></div></div>{activeId === "leads" ? <LeadsPanel leads={leads} loading={leadsLoading} onRefresh={refreshLeads} /> : <div className="cms-card cms-content-card"><EditorNode value={activeBlock.content} label="Содержимое блока" path={`page.blocks.${data.page.blocks.findIndex((block) => block.id === activeId)}.content`} onChange={update} /></div>}</section></main>
   </div>;
 }
