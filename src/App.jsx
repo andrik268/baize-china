@@ -19,14 +19,14 @@ import {
   X,
 } from "@phosphor-icons/react";
 import {
-  programs,
   quizSteps,
   recommendProgram,
-  faqGroups,
   universitySteps,
-  universityGroups,
   visaSteps,
 } from "./data.js";
+import { loadRemoteCms, submitLead } from "./apiClient.js";
+import { defaultCmsData, getBlock, mergeCmsData } from "./cmsData.js";
+import { CmsContext, useCms } from "./cmsContext.js";
 
 const CONTACT_PHONE = "+7 (903) 450-54-43";
 const CONTACT_PHONE_HREF = "tel:+79034505443";
@@ -34,6 +34,10 @@ const WHATSAPP_HREF = "https://wa.me/79034505443";
 const TELEGRAM_HREF = "https://t.me/chinainsummer";
 const MAX_HREF = "https://max.ru/";
 const VK_HREF = "https://vk.ru/study.holidays";
+
+function blockContent(cms, id) {
+  return getBlock(cms, id)?.content || getBlock(defaultCmsData, id).content;
+}
 
 const SOCIAL_ICON_PATHS = {
   whatsapp: "M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z",
@@ -55,6 +59,8 @@ function SocialIcon({ name, size = 24 }) {
 }
 
 function Brand({ light = false }) {
+  const cms = useCms();
+  const brand = blockContent(cms, "header");
   return (
     <a className={`brand ${light ? "brand--light" : ""}`} href="#top">
       <span className="brand__mark" aria-hidden="true">
@@ -67,23 +73,18 @@ function Brand({ light = false }) {
         </svg>
       </span>
       <span className="brand__copy">
-        <strong>Бай Цзэ</strong>
-        <small>Учеба и каникулы в Китае</small>
+        <strong>{brand.brand}</strong>
+        <small>{brand.tagline}</small>
       </span>
     </a>
   );
 }
 
 function Header({ openQuiz }) {
+  const cms = useCms();
+  const c = blockContent(cms, "header");
   const [menuOpen, setMenuOpen] = useState(false);
-  const links = [
-    ["Университеты", "#universities"],
-    ["Визы", "#visa"],
-    ["Каникулы", "#programs"],
-    ["Сопровождение", "#safety"],
-    ["Курсы", "#language"],
-    ["О нас", "#about"],
-  ];
+  const links = (c.navigation || []).map((label) => [label, { "Университеты": "#universities", "Визы": "#visa", "Каникулы": "#programs", "Сопровождение": "#safety", "Курсы": "#language", "О нас": "#about" }[label] || "#top"]);
 
   return (
     <header className="site-header">
@@ -93,11 +94,11 @@ function Header({ openQuiz }) {
           {links.map(([label, href]) => (
             <a key={href} href={href} onClick={() => setMenuOpen(false)}>{label}</a>
           ))}
-          <a className="nav__mobile-phone" href={CONTACT_PHONE_HREF}>{CONTACT_PHONE}</a>
+          <a className="nav__mobile-phone" href={c.phoneHref || CONTACT_PHONE_HREF}>{c.phone}</a>
         </nav>
         <div className="header__actions">
-          <a className="header__phone" href={CONTACT_PHONE_HREF}>{CONTACT_PHONE}</a>
-          <button className="button button--small" onClick={openQuiz}>Подобрать программу</button>
+          <a className="header__phone" href={c.phoneHref || CONTACT_PHONE_HREF}>{c.phone}</a>
+          <button className="button button--small" onClick={openQuiz}>{c.buttonText}</button>
           <button
             className="icon-button menu-button"
             type="button"
@@ -114,28 +115,29 @@ function Header({ openQuiz }) {
 }
 
 function Hero({ openQuiz }) {
+  const cms = useCms();
+  const c = blockContent(cms, "hero");
   return (
     <section className="hero section" id="top">
       <div className="shell hero__grid">
         <div className="hero__copy reveal">
-          <p className="eyebrow">Бай Цзэ</p>
-          <h1>Учеба и каникулы в Китае</h1>
-          <p className="hero__lead">Открываем Китай для вас и ваших детей</p>
+          <p className="eyebrow">{c.eyebrow}</p>
+          <h1>{c.title}</h1>
+          <p className="hero__lead">{c.lead}</p>
           <div className="hero__services">
-            <span>Помогаем выбрать вуз и получить грант</span>
-            <span>Организуем каникулы мечты с погружением в язык, культуру и технологии будущего</span>
+            {(c.services || []).map((service) => <span key={service}>{service}</span>)}
           </div>
           <div className="button-row">
-            <a className="button" href="#programs">Смотреть программы <ArrowRight size={18} /></a>
-            <button className="button button--ghost" onClick={openQuiz}>Подобрать за 1 минуту</button>
+            <a className="button" href="#programs">{c.primaryButton} <ArrowRight size={18} /></a>
+            <button className="button button--ghost" onClick={openQuiz}>{c.secondaryButton}</button>
           </div>
         </div>
         <div className="hero__visual reveal reveal--delay">
           <div className="hero__rings" aria-hidden="true" />
-          <img src="/assets/hero-campus.webp" alt="Подростки с куратором на современном кампусе в Китае" fetchPriority="high" />
+          <img src={c.image?.path} alt={c.image?.alt || ""} fetchPriority="high" />
           <div className="hero__note hero__note--bottom">
-            <strong>С 2008 года</strong>
-            <span>помогаем учиться за границей</span>
+            <strong>{c.noteTitle}</strong>
+            <span>{c.noteText}</span>
           </div>
         </div>
       </div>
@@ -144,27 +146,26 @@ function Hero({ openQuiz }) {
 }
 
 function WhyChina() {
-  const reasons = [
-    { icon: GlobeHemisphereEast, title: "Образование мирового уровня", text: "Китайские вузы - лидеры международных рейтингов. Дипломы признаются во всём мире." },
-    { icon: Buildings, title: "Умный бюджет", text: "Доступные цены на обучение и проживание. Возможность получить стипендии и гранты." },
-    { icon: Translate, title: "Китайский язык из первоисточника", text: "Ваш ребёнок будет говорить на языке будущего, а не просто учить его по учебникам." },
-    { icon: ShieldCheck, title: "Безопасность и яркие впечатления", text: "Безопасная страна, великая культура, невероятная кухня и друзья со всего света." },
-  ];
+  const cms = useCms(); const c = blockContent(cms, "why");
+  const icons = [GlobeHemisphereEast, Buildings, Translate, ShieldCheck];
   return (
     <section className="section section--compact" aria-labelledby="why-title">
       <div className="shell">
         <div className="heading-stack reveal">
-          <h2 id="why-title">Почему Китай?</h2>
-          <p>Страна, где современное образование встречается с языком, культурой и безопасной самостоятельностью.</p>
+          <h2 id="why-title">{c.title}</h2>
+          <p>{c.lead}</p>
         </div>
         <div className="benefit-grid reveal">
-          {reasons.map(({ icon: Icon, title, text }) => (
+          {(c.items || []).map(({ title, text }, index) => {
+            const Icon = icons[index % icons.length];
+            return (
             <article className="benefit" key={title}>
               <Icon size={32} weight="duotone" />
               <h3>{title}</h3>
               <p>{text}</p>
             </article>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
@@ -172,22 +173,17 @@ function WhyChina() {
 }
 
 function StudyAbroad({ openForm }) {
-  const fears = [
-    ["Не знаем, с чего начать", "Разложим поступление по шагам и объясним, какие решения нужны сейчас."],
-    ["Боимся ошибиться с вузом", "Сравним города, программы, бюджет и требования, чтобы выбор был осознанным."],
-    ["Переживаем за ребёнка", "Расскажем про кампус, быт, связь с куратором и поддержку на каждом этапе."],
-    ["Не понимаем, как всё оплатить", "Подскажем варианты грантов, стипендий и планирования расходов."],
-  ];
+  const cms = useCms(); const c = blockContent(cms, "studyAbroad");
 
   return (
     <section className="section study-abroad" id="study-abroad" aria-labelledby="study-abroad-title">
       <div className="shell">
         <div className="study-abroad__heading reveal">
-          <h2 id="study-abroad-title">Хочу учиться за границей</h2>
-          <p>Поступление в Китай - большой шаг для всей семьи. Мы помогаем превратить тревогу и вопросы в понятный план.</p>
+          <h2 id="study-abroad-title">{c.title}</h2>
+          <p>{c.lead}</p>
         </div>
         <div className="study-abroad__fears reveal">
-          {fears.map(([title, text], index) => (
+          {(c.fears || []).map(({ title, text }, index) => (
             <article key={title}>
               <span>0{index + 1}</span>
               <div><h3>{title}</h3><p>{text}</p></div>
@@ -196,10 +192,10 @@ function StudyAbroad({ openForm }) {
         </div>
         <div className="study-abroad__cta reveal">
           <div>
-            <h3>Даже если сейчас не понятно, где учиться и как всё организовать - это нормально</h3>
-            <p>Запишитесь на бесплатную консультацию и получите персональный пошаговый план поступления.</p>
+            <h3>{c.ctaTitle}</h3>
+            <p>{c.ctaText}</p>
           </div>
-          <button className="button" onClick={() => openForm("Бесплатная консультация по поступлению")}>Записаться на бесплатную консультацию <ArrowRight size={18} /></button>
+          <button className="button" onClick={() => openForm(c.ctaButton)}>{c.ctaButton} <ArrowRight size={18} /></button>
         </div>
       </div>
     </section>
@@ -207,20 +203,20 @@ function StudyAbroad({ openForm }) {
 }
 
 function Universities() {
+  const cms = useCms(); const c = blockContent(cms, "universities");
   return (
     <section className="section universities" id="universities" aria-labelledby="universities-title">
       <div className="shell">
         <div className="universities__intro reveal">
           <div>
-            <p className="eyebrow">Поступление в Китай</p>
-            <h2 id="universities-title">Университеты Китая</h2>
-            <p>Мечтаете изучать китайский язык и культуру, инженерию, журналистику, науки и технологии, медицину или любой другой предмет - в китайских университетах вы обязательно найдете подходящую программу!</p>
-            <p>В мировой рейтинг QS World University Rankings вошел 71 университет Китая. Таким образом, в национальный топ-10 вошли не только лучшие, но и самые популярные среди иностранных студентов вузы Китая.</p>
+            <p className="eyebrow">{c.eyebrow}</p>
+            <h2 id="universities-title">{c.title}</h2>
+            {(c.paragraphs || []).map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
           </div>
-          <img src="/assets/hero-campus.webp" alt="Студенты на территории китайского университета" loading="lazy" />
+          <img src={c.image?.path} alt={c.image?.alt || ""} loading="lazy" />
         </div>
         <div className="universities__accordions reveal">
-          {universityGroups.map((group) => (
+          {(c.groups || []).map((group) => (
             <details className="university-accordion" key={group.title}>
               <summary><span><strong>{group.title}</strong><small>{group.summary}</small></span><b aria-hidden="true">+</b></summary>
               <div className="university-accordion__body">
@@ -237,21 +233,22 @@ function Universities() {
 }
 
 function Programs({ openProgram }) {
+  const cms = useCms(); const c = blockContent(cms, "programs");
   return (
     <section className="section programs" id="programs" aria-labelledby="programs-title">
       <div className="shell">
         <div className="heading-stack reveal">
-          <h2 id="programs-title">Каникулы в Китае. Выбери своё приключение</h2>
-          <p>Язык, море, технологии и культура. Подберём программу под возраст, цели и самостоятельность ребёнка.</p>
+          <h2 id="programs-title">{c.title}</h2>
+          <p>{c.lead}</p>
         </div>
         <div className="program-grid">
-          {programs.map((program, index) => (
+          {(c.programs || []).map((program, index) => (
             <button
               className={`program-card program-card--${index + 1} reveal`}
               key={program.slug}
               onClick={() => openProgram(program)}
             >
-              <img src={program.cardImage} alt="" loading="lazy" />
+              <img src={program.cardImage?.path || program.cardImage} alt={program.cardImage?.alt || ""} loading="lazy" />
               <span className="program-card__shade" />
               <span className="program-card__content">
                 <small>{program.meta}</small>
@@ -268,21 +265,21 @@ function Programs({ openProgram }) {
 }
 
 function Safety() {
-  const points = ["Встреча и проводы", "24/7 связь с родителями", "Медицинская страховка", "Проверенное питание"];
+  const cms = useCms(); const c = blockContent(cms, "safety");
   return (
     <section className="section" id="safety">
       <div className="shell safety__grid">
         <div className="safety__media reveal">
-          <img src="/assets/airport-support.webp" alt="Куратор сопровождает подростков в аэропорту" loading="lazy" />
+          <img src={c.image?.path} alt={c.image?.alt || ""} loading="lazy" />
           <div className="safety__badge"><ShieldCheck size={24} /> Группа под присмотром</div>
         </div>
         <div className="safety__copy reveal">
-          <h2>Мы летим вместе с вами</h2>
-          <p>Вам не придётся переживать за ребёнка в аэропорту или чужой стране. Кураторы сопровождают группу от вылета из Краснодара или Москвы до возвращения домой.</p>
+          <h2>{c.title}</h2>
+          <p>{c.text}</p>
           <div className="check-grid">
-            {points.map((point) => <span key={point}><Check size={18} weight="bold" />{point}</span>)}
+            {(c.points || []).map((point) => <span key={point}><Check size={18} weight="bold" />{point}</span>)}
           </div>
-          <a className="text-link" href="#contacts">Задать вопрос о безопасности <ArrowRight size={18} /></a>
+          <a className="text-link" href="#contacts">{c.linkText} <ArrowRight size={18} /></a>
         </div>
       </div>
     </section>
@@ -290,18 +287,18 @@ function Safety() {
 }
 
 function About({ openConsultation }) {
+  const cms = useCms(); const c = blockContent(cms, "about");
   return (
     <section className="section about" id="about">
       <div className="shell about__grid reveal">
-        <div className="about__big">2008</div>
+        <div className="about__big">{c.number}</div>
         <div>
-          <h2>Study@Holidays. Бай Цзэ</h2>
-          <p className="about__lead">Почти тысяча студентов уже отправились с нами на учебу за границу или в языковые лагеря.</p>
+          <h2>{c.title}</h2>
+          <p className="about__lead">{c.lead}</p>
         </div>
         <div className="about__body">
-          <p>У нас есть программы под разные цели, возраст и бюджет. Бай Цзэ отвечает за азиатское направление: Китай.</p>
-          <p>Расскажем, как поступить в топ-университет, выучить первые иероглифы или провести каникулы от лепки пельменей до диалогов на китайском.</p>
-          <button className="button button--light" onClick={openConsultation}>Записаться на консультацию</button>
+          {(c.paragraphs || []).map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+          <button className="button button--light" onClick={openConsultation}>{c.button}</button>
         </div>
       </div>
     </section>
@@ -309,15 +306,16 @@ function About({ openConsultation }) {
 }
 
 function Faq() {
+  const cms = useCms(); const c = blockContent(cms, "faq");
   return (
     <section className="section faq" id="faq" aria-labelledby="faq-title">
       <div className="shell">
         <div className="heading-stack reveal">
-          <h2 id="faq-title">Обучение в Китае: главные вопросы родителей и студентов</h2>
-          <p>Собрали ответы о языке, выборе города, документах, кампусе и перспективах после выпуска.</p>
+          <h2 id="faq-title">{c.title}</h2>
+          <p>{c.lead}</p>
         </div>
         <div className="faq__groups reveal">
-          {faqGroups.map((group) => (
+          {(c.groups || []).map((group) => (
             <details className="faq-group" key={group.title}>
               <summary>
                 <span><strong>{group.title}</strong><small>{group.summary}</small></span>
@@ -340,20 +338,21 @@ function Faq() {
 }
 
 function Reviews({ openForm }) {
+  const cms = useCms(); const c = blockContent(cms, "reviews");
   return (
     <section className="section reviews" id="reviews" aria-labelledby="reviews-title">
       <div className="shell reviews__layout">
         <div className="reviews__lead reveal">
           <span className="reviews__mark"><ChatsCircle size={32} weight="duotone" /></span>
-          <h2 id="reviews-title">Отзывы</h2>
-          <p>Мы добавим сюда реальные истории семей после согласования публикации. Для нас важно показывать живой опыт, а не собирать отзывы без разрешения.</p>
-          <button className="button button--ghost" onClick={() => openForm("Запросить отзывы и примеры программ")}>Запросить примеры <ArrowRight size={18} /></button>
+          <h2 id="reviews-title">{c.title}</h2>
+          <p>{c.lead}</p>
+          <button className="button button--ghost" onClick={() => openForm(c.button)}>{c.button} <ArrowRight size={18} /></button>
         </div>
         <div className="reviews__empty reveal">
           <div className="reviews__quote">“</div>
-          <strong>Ваш отзыв может быть здесь</strong>
-          <p>Расскажите, какой маршрут вы рассматриваете. Мы покажем подходящие истории родителей и студентов.</p>
-          <a className="text-link" href={VK_HREF} target="_blank" rel="noreferrer">Смотреть новости во ВКонтакте <ArrowUpRight size={18} /></a>
+          <strong>{c.emptyTitle}</strong>
+          <p>{c.emptyText}</p>
+          <a className="text-link" href={VK_HREF} target="_blank" rel="noreferrer">{c.linkText} <ArrowUpRight size={18} /></a>
         </div>
       </div>
     </section>
@@ -361,27 +360,26 @@ function Reviews({ openForm }) {
 }
 
 function Cases() {
-  const cases = [
-    ["Поступление в вуз", "Здесь разместим скриншот или видео отзыва семьи после согласования публикации.", "/assets/hero-campus.webp", GraduationCap],
-    ["Каникулы в Китае", "Здесь разместим историю поездки, фото и видео группы с разрешения участников.", "/assets/chengdu-family.webp", GlobeHemisphereEast],
-    ["Китайский язык", "Здесь разместим отзыв ученика о занятиях и прогрессе в китайском языке.", "/assets/hainan-language.webp", Translate],
-  ];
+  const cms = useCms(); const c = blockContent(cms, "cases"); const icons = [GraduationCap, GlobeHemisphereEast, Translate];
   return (
     <section className="section cases" id="cases" aria-labelledby="cases-title">
       <div className="shell">
         <div className="heading-stack reveal">
-          <h2 id="cases-title">Кейсы</h2>
-          <p>Добавим сюда реальные скриншоты, видео и истории семей после согласования публикации.</p>
+          <h2 id="cases-title">{c.title}</h2>
+          <p>{c.lead}</p>
         </div>
         <div className="cases__grid">
-          {cases.map(([title, text, image, Icon]) => (
-            <article className="case-card reveal" key={title}>
-              <img className="case-card__image" src={image} alt="" loading="lazy" />
+            {(c.items || []).map(({ title, text, image }, index) => {
+              const Icon = icons[index % icons.length];
+              return (
+              <article className="case-card reveal" key={title}>
+              <img className="case-card__image" src={image?.path || image} alt={image?.alt || ""} loading="lazy" />
               <span className="case-card__icon"><Icon size={28} weight="duotone" /></span>
               <h3>{title}</h3>
               <p>{text}</p>
             </article>
-          ))}
+              );
+            })}
         </div>
       </div>
     </section>
@@ -389,6 +387,8 @@ function Cases() {
 }
 
 function DetailSection({ id, icon: Icon, title, intro, description, steps, included, button, image, reverse = false, openForm }) {
+  const cms = useCms(); const c = blockContent(cms, id);
+  title = c.title; intro = c.intro; description = c.description; steps = c.steps; included = c.included; button = c.button; image = c.image?.path || image;
   return (
     <section className={`section detail ${reverse ? "detail--reverse" : ""}`} id={id}>
       <div className="shell detail__grid">
@@ -420,31 +420,26 @@ function DetailSection({ id, icon: Icon, title, intro, description, steps, inclu
 }
 
 function Language({ openForm }) {
-  const features = [
-    ["Индивидуально", "Программа под цели и уровень ученика."],
-    ["В группе", "Живая практика в комфортной атмосфере."],
-    ["С носителем", "Больше речи и правильного произношения."],
-    ["Подготовка к HSK", "Системный маршрут до экзамена."],
-  ];
+  const cms = useCms(); const c = blockContent(cms, "language");
   return (
     <section className="section language" id="language">
       <div className="shell">
         <div className="language__head reveal">
           <div>
-            <h2>Заговорить по-китайски уверенно</h2>
-            <p>Курсы для детей и взрослых, онлайн и офлайн. От первого иероглифа до HSK-6.</p>
+            <h2>{c.title}</h2>
+            <p>{c.lead}</p>
           </div>
           <Translate size={64} weight="duotone" />
         </div>
         <div className="language__layout">
           <div className="language__image reveal">
-            <img src="/assets/hainan-language.webp" alt="Занятие китайским языком у моря" loading="lazy" />
-            <div><strong>Наша суперсила</strong><span>Практика языка в реальной среде</span></div>
+            <img src={c.image?.path} alt={c.image?.alt || ""} loading="lazy" />
+            <div><strong>{c.badgeTitle}</strong><span>{c.badgeText}</span></div>
           </div>
           <div className="language__features reveal">
-            {features.map(([name, text]) => <article key={name}><h3>{name}</h3><p>{text}</p></article>)}
-            <p className="language__statement">Учить китайский в классе хорошо. Заговорить на нём в Пекине бесценно!</p>
-            <button className="button button--ghost" onClick={() => openForm("Записаться на пробный урок")}>Записаться на пробный урок <ArrowRight size={18} /></button>
+            {(c.features || []).map(({ title, text }) => <article key={title}><h3>{title}</h3><p>{text}</p></article>)}
+            <p className="language__statement">{c.statement}</p>
+            <button className="button button--ghost" onClick={() => openForm(c.button)}>{c.button} <ArrowRight size={18} /></button>
           </div>
         </div>
       </div>
@@ -453,17 +448,18 @@ function Language({ openForm }) {
 }
 
 function QuizBanner({ openQuiz }) {
+  const cms = useCms(); const c = blockContent(cms, "quiz");
   return (
     <section className="section quiz-banner" id="quiz">
       <div className="shell quiz-banner__inner reveal">
         <div>
-          <p className="eyebrow">Персональный подбор</p>
-          <h2>Не знаете, с чего начать?</h2>
-          <p>Ответьте на 5 вопросов. Мы предложим программу под возраст и цели ребёнка.</p>
+          <p className="eyebrow">{c.eyebrow}</p>
+          <h2>{c.title}</h2>
+          <p>{c.lead}</p>
         </div>
         <div className="quiz-banner__action">
           <div><Clock size={20} /> 1 минута</div>
-          <button className="button button--terracotta" onClick={openQuiz}>Подобрать программу <ArrowRight size={18} /></button>
+          <button className="button button--terracotta" onClick={openQuiz}>{c.button} <ArrowRight size={18} /></button>
           <small>Ваши данные защищены</small>
         </div>
       </div>
@@ -472,27 +468,28 @@ function QuizBanner({ openQuiz }) {
 }
 
 function Contacts({ openForm }) {
+  const cms = useCms(); const c = blockContent(cms, "contacts");
   return (
     <section className="section contacts" id="contacts">
       <div className="shell contacts__grid">
         <div className="contacts__copy reveal">
-          <h2>Приходите на бесплатную консультацию</h2>
-          <p>Краснодар, ул. Красная 160, 3-й этаж, офис 307</p>
+          <h2>{c.title}</h2>
+          <p>{c.address}</p>
           <div className="contact-list">
-            <a href={CONTACT_PHONE_HREF}><Phone size={22} />{CONTACT_PHONE}</a>
-            <a href="tel:+79953218401"><Phone size={22} />+7 (995) 321-84-01</a>
-            <a href="mailto:kubancenter@mail.ru"><EnvelopeSimple size={22} />kubancenter@mail.ru</a>
+            <a href={`tel:${String(c.phone).replace(/\D/g, "")}`}><Phone size={22} />{c.phone}</a>
+            <a href={`tel:${String(c.secondPhone).replace(/\D/g, "")}`}><Phone size={22} />{c.secondPhone}</a>
+            <a href={`mailto:${c.email}`}><EnvelopeSimple size={22} />{c.email}</a>
           </div>
-          <button className="button" onClick={() => openForm("Бесплатная консультация в офисе")}>Записаться</button>
+          <button className="button" onClick={() => openForm(c.button)}>{c.button}</button>
         </div>
         <div className="contacts__map reveal" aria-label="Яндекс Карта: Краснодар, улица Красная, 160">
           <iframe
             title="Яндекс Карта: Краснодар, улица Красная, 160"
-            src="https://yandex.ru/map-widget/v1/?ll=38.976454%2C45.039808&mode=search&ol=geo&pt=38.976454%2C45.039808%2Cpm2rdm&z=16&lang=ru_RU"
+            src={c.mapEmbed}
             loading="lazy"
             allowFullScreen
           />
-          <a href="https://yandex.ru/maps/?text=Краснодар%2C%20Красная%20160" target="_blank" rel="noreferrer">Открыть в Яндекс Картах <ArrowUpRight size={18} /></a>
+          <a href={c.mapLink} target="_blank" rel="noreferrer">Открыть в Яндекс Картах <ArrowUpRight size={18} /></a>
         </div>
       </div>
     </section>
@@ -500,15 +497,16 @@ function Contacts({ openForm }) {
 }
 
 function Footer({ setLegal }) {
+  const cms = useCms(); const c = blockContent(cms, "footer");
   return (
     <footer className="footer">
       <div className="shell footer__grid">
-        <div><Brand light /><p>Учеба, языковые программы и каникулы в Китае с полным сопровождением.</p></div>
+        <div><Brand light /><p>{c.text}</p></div>
         <div><h3>Направления</h3><a href="#universities">Университеты</a><a href="#university">Как поступить</a><a href="#visa">Визы</a><a href="#programs">Каникулы</a><a href="#safety">Сопровождение</a><a href="#language">Китайский язык</a></div>
         <div><h3>Связаться</h3><a className="footer__social-link" href={WHATSAPP_HREF} target="_blank" rel="noreferrer"><SocialIcon name="whatsapp" size={18} />WhatsApp</a><a className="footer__social-link" href={TELEGRAM_HREF} target="_blank" rel="noreferrer"><SocialIcon name="telegram" size={18} />Telegram</a><a className="footer__social-link" href={MAX_HREF} target="_blank" rel="noreferrer"><SocialIcon name="max" size={18} />MAX</a><a className="footer__social-link" href={VK_HREF} target="_blank" rel="noreferrer"><SocialIcon name="vk" size={18} />ВКонтакте</a></div>
-        <div><h3>Документы</h3><button onClick={() => setLegal("privacy")}>Политика ПДн</button><button onClick={() => setLegal("offer")}>Публичная оферта</button><p>ИП Лазаренко Наталья Леонидовна<br />ИНН 231009681142</p></div>
+        <div><h3>Документы</h3><button onClick={() => setLegal("privacy")}>Политика ПДн</button><button onClick={() => setLegal("offer")}>Публичная оферта</button><p>{c.legalName}<br />{c.inn}</p></div>
       </div>
-      <div className="shell footer__bottom"><span>© 2026 Бай Цзэ</span><span>Краснодар, ул. Красная 160</span></div>
+      <div className="shell footer__bottom"><span>{c.copyright}</span><span>{c.address}</span></div>
     </footer>
   );
 }
@@ -546,7 +544,7 @@ function LeadForm({ title, onClose, defaultGoal = "" }) {
     }
     setError("");
     setState("loading");
-    window.setTimeout(() => setState("success"), 650);
+    submitLead({ name: data.get("name"), phone: data.get("phone"), goal: data.get("goal") || "", source: "site" }).catch(() => null).finally(() => window.setTimeout(() => setState("success"), 450));
   };
 
   if (state === "success") {
@@ -658,10 +656,15 @@ function LegalModal({ type, onClose }) {
 }
 
 export default function App() {
+  const [cmsData, setCmsData] = useState(defaultCmsData);
   const [quizOpen, setQuizOpen] = useState(false);
   const [program, setProgram] = useState(null);
   const [form, setForm] = useState(null);
   const [legal, setLegal] = useState(null);
+
+  useEffect(() => {
+    loadRemoteCms().then((remote) => setCmsData(mergeCmsData(remote)));
+  }, []);
 
   useEffect(() => {
     const items = document.querySelectorAll(".reveal");
@@ -675,7 +678,8 @@ export default function App() {
   }, []);
 
   return (
-    <>
+    <CmsContext.Provider value={cmsData}>
+      <>
       <Header openQuiz={() => setQuizOpen(true)} />
       <main>
         <Hero openQuiz={() => setQuizOpen(true)} />
@@ -721,6 +725,7 @@ export default function App() {
       {program && <ProgramModal program={program} onClose={() => setProgram(null)} openForm={(title) => setForm({ title, goal: "Каникулы в Китае" })} />}
       {form && <Modal onClose={() => setForm(null)} className="form-modal"><LeadForm title={form.title} defaultGoal={form.goal} onClose={() => setForm(null)} /></Modal>}
       {legal && <LegalModal type={legal} onClose={() => setLegal(null)} />}
-    </>
+      </>
+    </CmsContext.Provider>
   );
 }
