@@ -111,7 +111,10 @@ h3 {
 }
 
 h1,
-h2,
+h2 {
+  color: var(--terracotta);
+}
+
 h3 {
   color: var(--blue-dark);
 }
@@ -154,9 +157,9 @@ h3 {
   justify-content: center;
   gap: 10px;
   padding: 0 24px;
-  border: 1px solid var(--blue);
+  border: 1px solid var(--terracotta);
   border-radius: 999px;
-  background: var(--blue);
+  background: var(--terracotta);
   color: var(--white);
   font-weight: 600;
   white-space: nowrap;
@@ -165,8 +168,8 @@ h3 {
 }
 
 .button:hover {
-  background: var(--blue-dark);
-  border-color: var(--blue-dark);
+  background: var(--terracotta-dark);
+  border-color: var(--terracotta-dark);
   transform: translateY(-2px);
 }
 
@@ -194,35 +197,35 @@ a:focus-visible,
 .button--ghost {
   border-color: var(--line);
   background: color-mix(in srgb, var(--surface) 80%, transparent);
-  color: var(--blue-dark);
+  color: var(--terracotta-dark);
 }
 
 .button--ghost:hover {
   background: var(--white);
-  color: var(--blue-dark);
-  border-color: var(--blue);
+  color: var(--terracotta-dark);
+  border-color: var(--terracotta);
 }
 
 .button--terracotta {
-  border-color: var(--blue);
-  background: var(--blue);
+  border-color: var(--terracotta);
+  background: var(--terracotta);
 }
 
 .button--terracotta:hover {
-  border-color: var(--blue-dark);
-  background: var(--blue-dark);
+  border-color: var(--terracotta-dark);
+  background: var(--terracotta-dark);
 }
 
 .button--light {
-  border-color: var(--white);
-  background: var(--white);
-  color: var(--blue-dark);
+  border-color: var(--terracotta);
+  background: var(--terracotta);
+  color: var(--white);
 }
 
 .button--light:hover {
-  border-color: #fff;
-  background: #fff;
-  color: var(--blue-dark);
+  border-color: var(--terracotta-dark);
+  background: var(--terracotta-dark);
+  color: var(--white);
 }
 
 .button--wide {
@@ -1567,10 +1570,16 @@ a:focus-visible,
   gap: 8px;
   padding: 13px 16px;
   border-radius: 999px;
-  background: var(--blue);
+  background: var(--terracotta);
   color: var(--white);
   font-size: 0.87rem;
   font-weight: 600;
+  transition: background 180ms ease, transform 180ms ease;
+}
+
+.contacts__map > a:hover {
+  background: var(--terracotta-dark);
+  transform: translateY(-2px);
 }
 
 .footer {
