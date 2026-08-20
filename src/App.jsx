@@ -30,13 +30,24 @@ import { CmsContext, useCms } from "./cmsContext.js";
 
 const CONTACT_PHONE = "+7 (903) 450-54-43";
 const CONTACT_PHONE_HREF = "tel:+79034505443";
-const WHATSAPP_HREF = "https://wa.me/79034505443";
+const WHATSAPP_HREF = "https://wa.me/qr/NL4IWGGHHW3HL1";
 const TELEGRAM_HREF = "https://t.me/chinainsummer";
-const MAX_HREF = "https://max.ru/";
+const MAX_HREF = "https://max.ru/u/f9LHodD0cOIIDx6pG5WILnOJudHFpeJU2O83YpgmMthMi0cPQNv2JWO20gM";
 const VK_HREF = "https://vk.ru/study.holidays";
 
 function blockContent(cms, id) {
   return getBlock(cms, id)?.content || getBlock(defaultCmsData, id).content;
+}
+
+const FALLBACK_SOCIALS = [
+  { label: "WhatsApp", href: WHATSAPP_HREF, icon: "whatsapp" },
+  { label: "Telegram", href: TELEGRAM_HREF, icon: "telegram" },
+  { label: "MAX", href: MAX_HREF, icon: "max" },
+  { label: "ВКонтакте", href: VK_HREF, icon: "vk" },
+];
+
+function getSocials(cms) {
+  return blockContent(cms, "contacts").socials || FALLBACK_SOCIALS;
 }
 
 const SOCIAL_ICON_PATHS = {
@@ -497,13 +508,13 @@ function Contacts({ openForm }) {
 }
 
 function Footer({ setLegal }) {
-  const cms = useCms(); const c = blockContent(cms, "footer");
+  const cms = useCms(); const c = blockContent(cms, "footer"); const socials = getSocials(cms);
   return (
     <footer className="footer">
       <div className="shell footer__grid">
         <div><Brand light /><p>{c.text}</p></div>
         <div><h3>Направления</h3><a href="#universities">Университеты</a><a href="#university">Как поступить</a><a href="#visa">Визы</a><a href="#programs">Каникулы</a><a href="#safety">Сопровождение</a><a href="#language">Китайский язык</a></div>
-        <div><h3>Связаться</h3><a className="footer__social-link" href={WHATSAPP_HREF} target="_blank" rel="noreferrer"><SocialIcon name="whatsapp" size={18} />WhatsApp</a><a className="footer__social-link" href={TELEGRAM_HREF} target="_blank" rel="noreferrer"><SocialIcon name="telegram" size={18} />Telegram</a><a className="footer__social-link" href={MAX_HREF} target="_blank" rel="noreferrer"><SocialIcon name="max" size={18} />MAX</a><a className="footer__social-link" href={VK_HREF} target="_blank" rel="noreferrer"><SocialIcon name="vk" size={18} />ВКонтакте</a></div>
+        <div><h3>Связаться</h3>{socials.map((social) => <a className="footer__social-link" href={social.href} target="_blank" rel="noreferrer" key={social.label}><SocialIcon name={social.icon} size={18} />{social.label}</a>)}</div>
         <div><h3>Документы</h3><button onClick={() => setLegal("privacy")}>Политика ПДн</button><button onClick={() => setLegal("offer")}>Публичная оферта</button><p>{c.legalName}<br />{c.inn}</p></div>
       </div>
       <div className="shell footer__bottom"><span>{c.copyright}</span><span>{c.address}</span></div>
@@ -544,7 +555,8 @@ function LeadForm({ title, onClose, defaultGoal = "" }) {
     }
     setError("");
     setState("loading");
-    submitLead({ name: data.get("name"), phone: data.get("phone"), goal: data.get("goal") || "", source: "site" }).catch(() => null).finally(() => window.setTimeout(() => setState("success"), 450));
+    const goal = data.get("goal") || "";
+    submitLead({ name: data.get("name"), phone: data.get("phone"), message: title, source: "site", fields: { goal, form: title } }).catch(() => null).finally(() => window.setTimeout(() => setState("success"), 450));
   };
 
   if (state === "success") {
@@ -613,7 +625,7 @@ function QuizModal({ onClose }) {
       {step === quizSteps.length - 1 && answers[current.id] && (
         <div className="quiz-final">
           <div className="quiz-final__recommend"><small>Рекомендуем начать с</small><strong>{recommendation.title}</strong><span>{recommendation.description}</span></div>
-          <form onSubmit={(event) => { event.preventDefault(); setSubmitted(true); }}>
+          <form onSubmit={(event) => { event.preventDefault(); const data = new FormData(event.currentTarget); submitLead({ name: data.get("name"), phone: data.get("phone"), message: "Персональный подбор программы", source: "quiz", fields: answers }).catch(() => null).finally(() => setSubmitted(true)); }}>
             <label>Ваше имя<input required name="name" autoComplete="name" /></label>
             <label>Телефон<input required name="phone" autoComplete="tel" inputMode="tel" /></label>
             <label className="checkbox"><input required type="checkbox" /><span>Согласен на обработку персональных данных</span></label>
@@ -661,6 +673,7 @@ export default function App() {
   const [program, setProgram] = useState(null);
   const [form, setForm] = useState(null);
   const [legal, setLegal] = useState(null);
+  const socials = getSocials(cmsData);
 
   useEffect(() => {
     loadRemoteCms().then((remote) => setCmsData(mergeCmsData(remote)));
@@ -716,10 +729,7 @@ export default function App() {
       </main>
       <Footer setLegal={setLegal} />
       <div className="floating-social" aria-label="Быстрая связь">
-        <a className="floating-social__whatsapp" href={WHATSAPP_HREF} target="_blank" rel="noreferrer" aria-label="Написать в WhatsApp"><SocialIcon name="whatsapp" size={25} /></a>
-        <a className="floating-social__telegram" href={TELEGRAM_HREF} target="_blank" rel="noreferrer" aria-label="Написать в Telegram"><SocialIcon name="telegram" size={25} /></a>
-        <a className="floating-social__max" href={MAX_HREF} target="_blank" rel="noreferrer" aria-label="Написать в MAX"><SocialIcon name="max" size={25} /></a>
-        <a className="floating-social__vk" href={VK_HREF} target="_blank" rel="noreferrer" aria-label="Открыть ВКонтакте"><SocialIcon name="vk" size={25} /></a>
+        {socials.map((social) => <a className={`floating-social__${social.icon}`} href={social.href} target="_blank" rel="noreferrer" aria-label={`Открыть ${social.label}`} key={social.label}><SocialIcon name={social.icon} size={25} /></a>)}
       </div>
       {quizOpen && <QuizModal onClose={() => setQuizOpen(false)} />}
       {program && <ProgramModal program={program} onClose={() => setProgram(null)} openForm={(title) => setForm({ title, goal: "Каникулы в Китае" })} />}

@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowSquareOut, Check, FloppyDisk, Image as ImageIcon, SignOut, UploadSimple, X } from "@phosphor-icons/react";
-import { getRemoteSession, loadRemoteCms, loginRemote, logoutRemote, saveRemoteCms, uploadRemoteImage } from "./apiClient.js";
+import { ArrowClockwise, ArrowSquareOut, Check, FloppyDisk, Image as ImageIcon, SignOut, UploadSimple, X } from "@phosphor-icons/react";
+import { getRemoteSession, loadRemoteCms, loadRemoteLeads, loginRemote, logoutRemote, saveRemoteCms, uploadRemoteImage } from "./apiClient.js";
 import { ADMIN_LOGIN, CMS_SESSION_KEY, cloneCmsData, defaultCmsData, mergeCmsData } from "./cmsData.js";
 
 const SECTIONS = [
-  ["header", "Шапка сайта"], ["hero", "Первый экран"], ["why", "Почему Китай"], ["studyAbroad", "Поступление"], ["universities", "Университеты"], ["university", "Поступление в вуз"], ["about", "О компании"], ["faq", "Вопросы и ответы"], ["visa", "Визы"], ["programs", "Каникулы"], ["safety", "Сопровождение"], ["language", "Курсы китайского"], ["reviews", "Отзывы"], ["cases", "Кейсы"], ["quiz", "Персональный подбор"], ["contacts", "Контакты"], ["footer", "Подвал"],
+  ["header", "Шапка сайта"], ["hero", "Первый экран"], ["why", "Почему Китай"], ["studyAbroad", "Поступление"], ["universities", "Университеты"], ["university", "Поступление в вуз"], ["about", "О компании"], ["faq", "Вопросы и ответы"], ["visa", "Визы"], ["programs", "Каникулы"], ["safety", "Сопровождение"], ["language", "Курсы китайского"], ["reviews", "Отзывы"], ["cases", "Кейсы"], ["quiz", "Персональный подбор"], ["contacts", "Контакты"], ["footer", "Подвал"], ["leads", "Заявки"],
 ];
 
 const labelize = (key) => ({
@@ -62,18 +62,35 @@ function LoginScreen({ onLogin }) {
   return <main className="cms-login"><form className="cms-login-card" onSubmit={submit}><div className="cms-login-brand">白泽</div><p className="cms-kicker">Панель управления сайтом</p><h1>Войти в админку</h1><p>Здесь можно менять тексты, изображения и ссылки на сайте.</p><label className="cms-field"><span>Логин</span><input type="email" value={login} onChange={(event) => setLogin(event.target.value)} autoComplete="username" /></label><label className="cms-field"><span>Пароль</span><input type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="current-password" /></label>{error ? <p className="cms-error">{error}</p> : null}<button className="cms-button cms-button--primary" disabled={loading}>{loading ? "Проверяем…" : "Войти"}</button></form></main>;
 }
 
+function LeadsPanel({ leads, loading, onRefresh }) {
+  return <div className="cms-leads-panel">
+    <div className="cms-leads-toolbar"><div><h3>Заявки с сайта</h3><p>Новые обращения из форм консультации и персонального подбора.</p></div><button className="cms-button cms-button--secondary" onClick={onRefresh} disabled={loading}><ArrowClockwise size={17} />{loading ? "Обновляем…" : "Обновить"}</button></div>
+    {loading && !leads.length ? <p className="cms-leads-empty">Загружаем заявки…</p> : null}
+    {!loading && !leads.length ? <p className="cms-leads-empty">Пока заявок нет. Они появятся здесь после заполнения формы на сайте.</p> : null}
+    <div className="cms-leads-list">{leads.map((lead) => <article className="cms-lead-card" key={lead.id}>
+      <div className="cms-lead-card__top"><strong>{lead.name || "Без имени"}</strong><span>{lead.createdAt || ""}</span></div>
+      <a className="cms-lead-card__contact" href={`tel:${String(lead.contact || "").replace(/\D/g, "")}`}>{lead.contact}</a>
+      <div className="cms-lead-card__meta"><span>{lead.source === "quiz" ? "Персональный подбор" : "Форма консультации"}</span><span className="cms-lead-status">{lead.status === "new" ? "Новая" : lead.status}</span></div>
+      {lead.message ? <p>{lead.message}</p> : null}
+      {lead.fields?.goal ? <p><b>Направление:</b> {lead.fields.goal}</p> : null}
+    </article>)}</div>
+  </div>;
+}
+
 export function AdminApp() {
-  const [user, setUser] = useState(null); const [data, setData] = useState(defaultCmsData); const [activeId, setActiveId] = useState("hero"); const [status, setStatus] = useState(""); const [loading, setLoading] = useState(true); const [saving, setSaving] = useState(false);
+  const [user, setUser] = useState(null); const [data, setData] = useState(defaultCmsData); const [activeId, setActiveId] = useState("hero"); const [status, setStatus] = useState(""); const [loading, setLoading] = useState(true); const [saving, setSaving] = useState(false); const [leads, setLeads] = useState([]); const [leadsLoading, setLeadsLoading] = useState(false);
   const activeBlock = useMemo(() => data.page.blocks.find((block) => block.id === activeId) || data.page.blocks[0], [data, activeId]);
   useEffect(() => { Promise.all([getRemoteSession().catch(() => null), loadRemoteCms()]).then(([session, remote]) => { setUser(session); setData(mergeCmsData(remote)); }).finally(() => setLoading(false)); }, []);
+  useEffect(() => { if (!user) return; setLeadsLoading(true); loadRemoteLeads().then(setLeads).catch(() => setLeads([])).finally(() => setLeadsLoading(false)); }, [user]);
   async function login(login, password) { const session = await loginRemote(login, password); setUser(session); }
   async function save() { setSaving(true); setStatus(""); try { const saved = await saveRemoteCms(data); setData(mergeCmsData(saved)); setStatus("Сохранено"); } catch (error) { setStatus(error.message || "Не удалось сохранить"); } finally { setSaving(false); } }
   async function logout() { try { await logoutRemote(); } catch { /* local session can still be cleared */ } localStorage.removeItem(CMS_SESSION_KEY); setUser(null); }
+  async function refreshLeads() { setLeadsLoading(true); try { setLeads(await loadRemoteLeads()); } catch { setStatus("Не удалось загрузить заявки"); } finally { setLeadsLoading(false); } }
   if (loading) return <main className="cms-login"><div className="cms-login-card"><p>Загружаем панель…</p></div></main>;
   if (!user) return <LoginScreen onLogin={login} />;
   const update = (path, value) => setData((current) => setPath(current, path, value));
   return <div className="cms-shell">
     <aside className="cms-sidebar"><div className="cms-sidebar-brand"><span>白泽</span><div><strong>Бай Цзэ</strong><small>Редактор сайта</small></div></div><nav>{SECTIONS.map(([id, label]) => <button key={id} className={id === activeId ? "is-active" : ""} onClick={() => setActiveId(id)}>{label}</button>)}</nav><div className="cms-sidebar-bottom"><a href="/" target="_blank" rel="noreferrer">Открыть сайт <ArrowSquareOut size={16} /></a><button onClick={logout}><SignOut size={16} /> Выйти</button></div></aside>
-    <main className="cms-main"><header className="cms-topbar"><div><p className="cms-kicker">Админка / Бай Цзэ</p><h1>Редактор контента</h1></div><div className="cms-top-actions">{status ? <span className={status === "Сохранено" ? "cms-saved" : "cms-error"}>{status === "Сохранено" ? <Check size={17} /> : null}{status}</span> : null}<button className="cms-button cms-button--primary" onClick={save} disabled={saving}><FloppyDisk size={18} />{saving ? "Сохраняем…" : "Сохранить изменения"}</button></div></header><section className="cms-editor"><div className="cms-editor-intro"><span className="cms-section-number">{String(SECTIONS.findIndex(([id]) => id === activeId) + 1).padStart(2, "0")}</span><div><h2>{SECTIONS.find(([id]) => id === activeId)?.[1] || activeBlock.title}</h2><p>Меняйте значения ниже и нажмите «Сохранить изменения». Фото можно загрузить прямо с компьютера.</p></div></div><div className="cms-card cms-content-card"><EditorNode value={activeBlock.content} label="Содержимое блока" path={`page.blocks.${data.page.blocks.findIndex((block) => block.id === activeId)}.content`} onChange={update} /></div></section></main>
+    <main className="cms-main"><header className="cms-topbar"><div><p className="cms-kicker">Админка / Бай Цзэ</p><h1>Редактор контента</h1></div><div className="cms-top-actions">{status ? <span className={status === "Сохранено" ? "cms-saved" : "cms-error"}>{status === "Сохранено" ? <Check size={17} /> : null}{status}</span> : null}{activeId !== "leads" ? <button className="cms-button cms-button--primary" onClick={save} disabled={saving}><FloppyDisk size={18} />{saving ? "Сохраняем…" : "Сохранить изменения"}</button> : null}</div></header><section className="cms-editor"><div className="cms-editor-intro"><span className="cms-section-number">{String(SECTIONS.findIndex(([id]) => id === activeId) + 1).padStart(2, "0")}</span><div><h2>{SECTIONS.find(([id]) => id === activeId)?.[1] || activeBlock.title}</h2><p>{activeId === "leads" ? "Здесь отображаются обращения посетителей сайта." : "Меняйте значения ниже и нажмите «Сохранить изменения». Фото можно загрузить прямо с компьютера."}</p></div></div>{activeId === "leads" ? <LeadsPanel leads={leads} loading={leadsLoading} onRefresh={refreshLeads} /> : <div className="cms-card cms-content-card"><EditorNode value={activeBlock.content} label="Содержимое блока" path={`page.blocks.${data.page.blocks.findIndex((block) => block.id === activeId)}.content`} onChange={update} /></div>}</section></main>
   </div>;
 }

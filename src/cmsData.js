@@ -100,7 +100,7 @@ const defaultBlocks = [
   },
   {
     id: "contacts", type: "contacts", title: "Контакты", isActive: true,
-    content: { title: "Приходите на бесплатную консультацию", address: "Краснодар, ул. Красная 160, 3-й этаж, офис 307", phone: "+7 (903) 450-54-43", secondPhone: "+7 (995) 321-84-01", email: "kubancenter@mail.ru", button: "Записаться", mapEmbed: "https://yandex.ru/map-widget/v1/?ll=38.976454%2C45.039808&mode=search&ol=geo&pt=38.976454%2C45.039808%2Cpm2rdm&z=16&lang=ru_RU", mapLink: "https://yandex.ru/maps/?text=Краснодар%2C%20Красная%20160" },
+    content: { title: "Приходите на бесплатную консультацию", address: "Краснодар, ул. Красная 160, 3-й этаж, офис 307", phone: "+7 (903) 450-54-43", secondPhone: "+7 (995) 321-84-01", email: "kubancenter@mail.ru", button: "Записаться", mapEmbed: "https://yandex.ru/map-widget/v1/?ll=38.976454%2C45.039808&mode=search&ol=geo&pt=38.976454%2C45.039808%2Cpm2rdm&z=16&lang=ru_RU", mapLink: "https://yandex.ru/maps/?text=Краснодар%2C%20Красная%20160", socials: [{ label: "WhatsApp", href: "https://wa.me/qr/NL4IWGGHHW3HL1", icon: "whatsapp" }, { label: "Telegram", href: "https://t.me/chinainsummer", icon: "telegram" }, { label: "MAX", href: "https://max.ru/u/f9LHodD0cOIIDx6pG5WILnOJudHFpeJU2O83YpgmMthMi0cPQNv2JWO20gM", icon: "max" }, { label: "ВКонтакте", href: "https://vk.ru/study.holidays", icon: "vk" }] },
   },
   {
     id: "footer", type: "footer", title: "Подвал", isActive: true,

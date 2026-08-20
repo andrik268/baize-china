@@ -17,3 +17,4 @@ export async function logoutRemote() { await apiRequest("/api/logout", { method:
 export async function getRemoteSession() { const payload = await apiRequest("/api/me"); return payload.user || null; }
 export async function uploadRemoteImage(file) { const formData = new FormData(); formData.append("image", file); const payload = await apiRequest("/api/media", { method: "POST", body: formData }); return payload.path; }
 export async function submitLead(data) { const payload = await apiRequest("/api/leads", { method: "POST", headers: JSON_HEADERS, body: JSON.stringify(data) }); return payload.lead; }
+export async function loadRemoteLeads() { const payload = await apiRequest("/api/leads"); return payload.leads || []; }
