@@ -681,10 +681,10 @@ function send_lead_email(array $lead): bool
         return false;
     }
 
-    $subject = 'Новая заявка с сайта АН Шоколад';
+    $subject = 'Новая заявка с сайта Бай Цзэ';
     $fields = $lead['fields'] ? json_encode($lead['fields'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : '-';
     $body = implode("\n", [
-        'Новая заявка с сайта АН Шоколад',
+        'Новая заявка с сайта Бай Цзэ',
         '',
         'Имя: ' . ($lead['name'] ?: '-'),
         'Контакт: ' . $lead['contact'],
@@ -722,7 +722,7 @@ function send_smtp_email(array $notifications, string $to, string $from, string 
     $timeout = max(5, min(30, (int)($smtp['timeout'] ?? 15)));
 
     if ($host === '' || $port < 1 || $port > 65535 || $username === '' || $password === '') {
-        error_log('АН Шоколад SMTP: missing configuration.');
+        error_log('Бай Цзэ SMTP: missing configuration.');
         return false;
     }
 
@@ -736,7 +736,7 @@ function send_smtp_email(array $notifications, string $to, string $from, string 
     );
 
     if (!is_resource($socket)) {
-        error_log('АН Шоколад SMTP: connection failed (' . $errorNumber . ').');
+        error_log('Бай Цзэ SMTP: connection failed (' . $errorNumber . ').');
         return false;
     }
 
@@ -762,7 +762,7 @@ function send_smtp_email(array $notifications, string $to, string $from, string 
         smtp_command($socket, 'RCPT TO:<' . $to . '>', [250, 251]);
         smtp_command($socket, 'DATA', [354]);
 
-        $fromName = smtp_header_value((string)($notifications['from_name'] ?? 'АН Шоколад'));
+        $fromName = smtp_header_value((string)($notifications['from_name'] ?? 'Бай Цзэ'));
         $headers = [
             'From: ' . smtp_encode_header($fromName) . ' <' . $from . '>',
             'Reply-To: ' . $from,
@@ -779,7 +779,7 @@ function send_smtp_email(array $notifications, string $to, string $from, string 
         fclose($socket);
         return true;
     } catch (Throwable $exception) {
-        error_log('АН Шоколад SMTP: ' . $exception->getMessage());
+        error_log('Бай Цзэ SMTP: ' . $exception->getMessage());
         if (is_resource($socket)) {
             @fclose($socket);
         }
