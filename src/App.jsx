@@ -33,6 +33,7 @@ const CONTACT_PHONE_HREF = "tel:+79034505443";
 const WHATSAPP_HREF = "https://wa.me/qr/NL4IWGGHHW3HL1";
 const TELEGRAM_HREF = "https://t.me/chinainsummer";
 const MAX_HREF = "https://max.ru/u/f9LHodD0cOIIDx6pG5WILnOJudHFpeJU2O83YpgmMthMi0cPQNv2JWO20gM";
+const MAX_CHANNEL_HREF = "https://max.ru/join/_iffpxt8pk9Rf29rOX1swElr4iSKT22FMtNA6yUC_NE";
 const VK_HREF = "https://vk.ru/study.holidays";
 
 function blockContent(cms, id) {
@@ -480,6 +481,8 @@ function QuizBanner({ openQuiz }) {
 
 function Contacts({ openForm }) {
   const cms = useCms(); const c = blockContent(cms, "contacts");
+  const maxChannelHref = c.maxChannelHref || MAX_CHANNEL_HREF;
+  const maxChannelLabel = c.maxChannelLabel || "Канал MAX";
   return (
     <section className="section contacts" id="contacts">
       <div className="shell contacts__grid">
@@ -491,6 +494,11 @@ function Contacts({ openForm }) {
             <a href={`tel:${String(c.secondPhone).replace(/\D/g, "")}`}><Phone size={22} />{c.secondPhone}</a>
             <a href={`mailto:${c.email}`}><EnvelopeSimple size={22} />{c.email}</a>
           </div>
+          <a className="contacts__channel" href={maxChannelHref} target="_blank" rel="noreferrer">
+            <span className="contacts__channel-icon"><SocialIcon name="max" size={22} /></span>
+            <span><strong>{maxChannelLabel}</strong><small>Новости и общение в MAX</small></span>
+            <ArrowUpRight size={18} />
+          </a>
           <button className="button" onClick={() => openForm(c.button)}>{c.button}</button>
         </div>
         <div className="contacts__map reveal" aria-label="Яндекс Карта: Краснодар, улица Красная, 160">

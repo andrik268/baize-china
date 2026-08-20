@@ -1544,6 +1544,59 @@ a:focus-visible,
   color: var(--terracotta);
 }
 
+.contacts__channel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: -12px 0 28px;
+  padding: 14px 16px;
+  border: 1px solid rgba(201, 106, 82, 0.24);
+  border-radius: 16px;
+  background: rgba(255, 248, 244, 0.84);
+  color: var(--ink);
+}
+
+.contacts__channel:hover {
+  border-color: var(--terracotta);
+  background: #fff;
+}
+
+.contacts__channel-icon {
+  display: grid;
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #18b8ff, #7540ff);
+  color: var(--white);
+}
+
+.contacts__channel-icon img {
+  width: 23px;
+  height: 23px;
+  filter: brightness(0) invert(1);
+}
+
+.contacts__channel > span:nth-child(2) {
+  display: grid;
+  gap: 3px;
+  flex: 1;
+}
+
+.contacts__channel strong {
+  font-size: 0.96rem;
+}
+
+.contacts__channel small {
+  color: var(--ink-muted);
+  font-size: 0.78rem;
+}
+
+.contacts__channel > svg {
+  color: var(--terracotta);
+}
+
 .contacts__map {
   position: relative;
   min-height: 500px;

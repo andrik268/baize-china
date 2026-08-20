@@ -8,7 +8,7 @@ const SECTIONS = [
 ];
 
 const labelize = (key) => ({
-  title: "Заголовок", lead: "Подзаголовок", text: "Текст", description: "Описание", image: "Изображение", cardImage: "Изображение карточки", alt: "Описание изображения", button: "Кнопка", primaryButton: "Основная кнопка", secondaryButton: "Вторая кнопка", address: "Адрес", phone: "Телефон", secondPhone: "Дополнительный телефон", email: "Электронная почта", linkText: "Текст ссылки", statement: "Акцентная фраза", eyebrow: "Надзаголовок", noteTitle: "Заголовок плашки", noteText: "Текст плашки", brand: "Название бренда", tagline: "Подпись бренда", ctaTitle: "Заголовок призыва", ctaText: "Текст призыва", copyright: "Копирайт", legalName: "Юридическое название", inn: "ИНН",
+  title: "Заголовок", lead: "Подзаголовок", text: "Текст", description: "Описание", image: "Изображение", cardImage: "Изображение карточки", alt: "Описание изображения", button: "Кнопка", primaryButton: "Основная кнопка", secondaryButton: "Вторая кнопка", address: "Адрес", phone: "Телефон", secondPhone: "Дополнительный телефон", email: "Электронная почта", linkText: "Текст ссылки", statement: "Акцентная фраза", eyebrow: "Надзаголовок", noteTitle: "Заголовок плашки", noteText: "Текст плашки", brand: "Название бренда", tagline: "Подпись бренда", ctaTitle: "Заголовок призыва", ctaText: "Текст призыва", copyright: "Копирайт", legalName: "Юридическое название", inn: "ИНН", maxChannelLabel: "Название канала MAX", maxChannelHref: "Ссылка на канал MAX",
 }[key] || key.replace(/([A-Z])/g, " $1").replace(/^./, (value) => value.toUpperCase()));
 
 function setPath(source, path, value) {
