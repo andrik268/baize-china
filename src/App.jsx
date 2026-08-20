@@ -451,7 +451,7 @@ function Language({ openForm }) {
           <div className="language__features reveal">
             {(c.features || []).map(({ title, text }) => <article key={title}><h3>{title}</h3><p>{text}</p></article>)}
             <p className="language__statement">{c.statement}</p>
-            <button className="button button--ghost" onClick={() => openForm(c.button)}>{c.button} <ArrowRight size={18} /></button>
+            <button className="button" onClick={() => openForm(c.button)}>{c.button} <ArrowRight size={18} /></button>
           </div>
         </div>
       </div>
