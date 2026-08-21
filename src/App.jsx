@@ -21,6 +21,7 @@ import {
 import {
   quizSteps,
   recommendProgram,
+  yingkouGallery,
   universitySteps,
   visaSteps,
 } from "./data.js";
@@ -260,7 +261,11 @@ function Programs({ openProgram }) {
               key={program.slug}
               onClick={() => openProgram(program)}
             >
-              <img src={program.cardImage?.path || program.cardImage} alt={program.cardImage?.alt || ""} loading="lazy" />
+              <img
+                src={program.slug === "yingkou-beijing" ? yingkouGallery[0].src : (program.cardImage?.path || program.cardImage)}
+                alt={program.cardImage?.alt || program.title || ""}
+                loading="lazy"
+              />
               <span className="program-card__shade" />
               <span className="program-card__content">
                 <small>{program.meta}</small>
@@ -586,9 +591,43 @@ function LeadForm({ title, onClose, defaultGoal = "" }) {
 }
 
 function ProgramModal({ program, onClose, openForm }) {
+  const [slide, setSlide] = useState(0);
+  const gallery = program.slug === "yingkou-beijing"
+    ? (program.gallery?.length ? program.gallery : yingkouGallery)
+    : [{ src: program.image?.path || program.image, alt: program.title }];
+  const currentSlide = gallery[slide] || gallery[0];
+  const moveSlide = (direction) => setSlide((value) => (value + direction + gallery.length) % gallery.length);
+
   return (
     <Modal onClose={onClose} className="program-modal">
-      <img src={program.image} alt="" />
+      <div className="program-modal__gallery">
+        <div className="program-modal__gallery-frame">
+          <img src={currentSlide.src || currentSlide.path} alt={currentSlide.alt || program.title} />
+          {gallery.length > 1 && (
+            <div className="program-modal__gallery-controls">
+              <span>{slide + 1} / {gallery.length}</span>
+              <div>
+                <button type="button" onClick={() => moveSlide(-1)} aria-label="Предыдущее фото"><ArrowLeft size={20} /></button>
+                <button type="button" onClick={() => moveSlide(1)} aria-label="Следующее фото"><ArrowRight size={20} /></button>
+              </div>
+            </div>
+          )}
+        </div>
+        {gallery.length > 1 && (
+          <div className="program-modal__gallery-dots" aria-label="Выбор фотографии">
+            {gallery.map((item, index) => (
+              <button
+                type="button"
+                className={index === slide ? "is-active" : ""}
+                key={item.src || item.path || index}
+                onClick={() => setSlide(index)}
+                aria-label={`Открыть фото ${index + 1}`}
+                aria-current={index === slide ? "true" : undefined}
+              />
+            ))}
+          </div>
+        )}
+      </div>
       <div className="program-modal__copy">
         <small>{program.meta}</small><h2>{program.title}</h2><p>{program.description}</p>
         <div><Sparkle size={20} /><span><strong>Кому подойдёт</strong>{program.fit}</span></div>
