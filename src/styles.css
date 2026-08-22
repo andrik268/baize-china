@@ -1088,9 +1088,6 @@ a:focus-visible,
 }
 
 .reviews__videos {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
   background: var(--blue-dark);
 }
 
@@ -1123,8 +1120,9 @@ a:focus-visible,
   color: var(--white);
 }
 
-.review-video-card:last-child {
-  grid-column: 1 / -1;
+.reviews-slider {
+  display: grid;
+  gap: 18px;
 }
 
 .review-video-card__video {
@@ -1148,6 +1146,64 @@ a:focus-visible,
   margin: 7px 0 0;
   color: color-mix(in srgb, var(--white) 72%, transparent);
   font-size: 0.9rem;
+}
+
+.reviews-slider__controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.reviews-slider__arrow {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border: 1px solid color-mix(in srgb, var(--white) 24%, transparent);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--white) 8%, transparent);
+  color: var(--white);
+  cursor: pointer;
+  transition: background .2s ease, border-color .2s ease, transform .2s ease;
+}
+
+.reviews-slider__arrow:hover {
+  border-color: color-mix(in srgb, var(--white) 48%, transparent);
+  background: color-mix(in srgb, var(--white) 16%, transparent);
+  transform: translateY(-1px);
+}
+
+.reviews-slider__dots {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-left: auto;
+}
+
+.reviews-slider__dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--white) 36%, transparent);
+  cursor: pointer;
+  transition: width .2s ease, background .2s ease;
+}
+
+.reviews-slider__dot--active {
+  width: 24px;
+  border-radius: 99px;
+  background: var(--gold);
+}
+
+.reviews-slider__count {
+  min-width: 38px;
+  color: color-mix(in srgb, var(--white) 70%, transparent);
+  font-size: .82rem;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
 }
 
 .cases {
@@ -2249,8 +2305,6 @@ a:focus-visible,
   .detail--reverse .detail__panel { grid-column: 1; grid-row: auto; }
   .detail--reverse .detail__intro { grid-row: 1; }
   .language__image { min-height: 520px; }
-  .reviews__videos { grid-template-columns: 1fr; }
-  .review-video-card:last-child { grid-column: auto; }
   .quiz-banner__inner { grid-template-columns: 1fr; gap: 34px; }
   .contacts__map { min-height: 440px; }
   .footer__grid { grid-template-columns: 1.3fr repeat(3, 1fr); gap: 28px; }

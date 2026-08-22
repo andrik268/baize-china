@@ -388,6 +388,10 @@ function Faq() {
 
 function Reviews({ openForm }) {
   const cms = useCms(); const c = blockContent(cms, "reviews");
+  const [activeReview, setActiveReview] = useState(0);
+  const activeItem = REVIEW_VIDEO_FALLBACKS[activeReview];
+  const activeVideo = REVIEW_VIDEO_SOURCES[activeReview];
+  const moveReview = (offset) => setActiveReview((value) => (value + offset + REVIEW_VIDEO_SOURCES.length) % REVIEW_VIDEO_SOURCES.length);
   return (
     <section className="section reviews" id="reviews" aria-labelledby="reviews-title">
       <div className="shell reviews__layout">
@@ -398,18 +402,37 @@ function Reviews({ openForm }) {
           <button className="button button--ghost" onClick={() => openForm(c.button)}>{c.button} <ArrowRight size={18} /></button>
         </div>
         <div className="reviews__videos reveal">
-          {REVIEW_VIDEO_SOURCES.map((video, index) => {
-            const item = REVIEW_VIDEO_FALLBACKS[index];
-            return (
-              <article className="review-video-card" key={video}>
-                <video className="review-video-card__video" controls preload="metadata" playsInline src={video} aria-label={item.title} />
-                <div className="review-video-card__body">
-                  <strong>{item.title}</strong>
-                  <p>{item.text}</p>
-                </div>
-              </article>
-            );
-          })}
+          <div className="reviews-slider" role="region" aria-roledescription="carousel" aria-label="Видео-отзывы">
+            <article className="review-video-card">
+              <video className="review-video-card__video" controls preload="metadata" playsInline src={activeVideo} aria-label={activeItem.title} />
+              <div className="review-video-card__body">
+                <strong>{activeItem.title}</strong>
+                <p>{activeItem.text}</p>
+              </div>
+            </article>
+            <div className="reviews-slider__controls">
+              <button className="reviews-slider__arrow" type="button" onClick={() => moveReview(-1)} aria-label="Предыдущий отзыв">
+                <ArrowLeft size={20} />
+              </button>
+              <div className="reviews-slider__dots" role="tablist" aria-label="Выбор отзыва">
+                {REVIEW_VIDEO_SOURCES.map((video, index) => (
+                  <button
+                    className={`reviews-slider__dot ${index === activeReview ? "reviews-slider__dot--active" : ""}`}
+                    key={video}
+                    type="button"
+                    role="tab"
+                    aria-selected={index === activeReview}
+                    aria-label={`Отзыв ${index + 1}`}
+                    onClick={() => setActiveReview(index)}
+                  />
+                ))}
+              </div>
+              <span className="reviews-slider__count">{activeReview + 1} / {REVIEW_VIDEO_SOURCES.length}</span>
+              <button className="reviews-slider__arrow" type="button" onClick={() => moveReview(1)} aria-label="Следующий отзыв">
+                <ArrowRight size={20} />
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </section>
