@@ -1077,7 +1077,7 @@ a:focus-visible,
 }
 
 .reviews__lead,
-.reviews__empty {
+.reviews__videos {
   padding: clamp(30px, 5vw, 62px);
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -1087,12 +1087,11 @@ a:focus-visible,
   background: var(--surface);
 }
 
-.reviews__empty {
+.reviews__videos {
   display: grid;
-  align-content: center;
-  min-height: 330px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
   background: var(--blue-dark);
-  color: var(--white);
 }
 
 .reviews__mark {
@@ -1116,25 +1115,39 @@ a:focus-visible,
   color: var(--ink-muted);
 }
 
-.reviews__quote {
-  margin-bottom: 14px;
-  color: var(--gold);
-  font-size: 5.2rem;
-  line-height: 0.75;
-}
-
-.reviews__empty strong {
-  font-size: clamp(1.45rem, 3vw, 2.1rem);
-}
-
-.reviews__empty p {
-  max-width: 48ch;
-  margin: 14px 0 24px;
-  color: color-mix(in srgb, var(--white) 72%, transparent);
-}
-
-.reviews__empty .text-link {
+.review-video-card {
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--white) 16%, transparent);
+  border-radius: calc(var(--radius) - 8px);
+  background: color-mix(in srgb, var(--white) 7%, transparent);
   color: var(--white);
+}
+
+.review-video-card:last-child {
+  grid-column: 1 / -1;
+}
+
+.review-video-card__video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #0f274c;
+  object-fit: cover;
+}
+
+.review-video-card__body {
+  padding: 17px 18px 19px;
+}
+
+.review-video-card__body strong {
+  display: block;
+  font-size: 1.1rem;
+}
+
+.review-video-card__body p {
+  margin: 7px 0 0;
+  color: color-mix(in srgb, var(--white) 72%, transparent);
+  font-size: 0.9rem;
 }
 
 .cases {
@@ -1163,6 +1176,15 @@ a:focus-visible,
   width: calc(100% + 56px);
   height: 170px;
   margin: 0 -28px 24px;
+  object-fit: cover;
+}
+
+.case-card__video {
+  display: block;
+  width: calc(100% + 56px);
+  aspect-ratio: 16 / 9;
+  margin: 0 -28px 24px;
+  background: #e5edf8;
   object-fit: cover;
 }
 
@@ -2227,7 +2249,8 @@ a:focus-visible,
   .detail--reverse .detail__panel { grid-column: 1; grid-row: auto; }
   .detail--reverse .detail__intro { grid-row: 1; }
   .language__image { min-height: 520px; }
-  .reviews__empty { min-height: 260px; }
+  .reviews__videos { grid-template-columns: 1fr; }
+  .review-video-card:last-child { grid-column: auto; }
   .quiz-banner__inner { grid-template-columns: 1fr; gap: 34px; }
   .contacts__map { min-height: 440px; }
   .footer__grid { grid-template-columns: 1.3fr repeat(3, 1fr); gap: 28px; }
@@ -2283,7 +2306,7 @@ a:focus-visible,
   .faq-group > summary { padding: 20px; }
   .faq-item > summary { align-items: flex-start; }
   .reviews__lead,
-  .reviews__empty { padding: 28px 22px; }
+  .reviews__videos { padding: 28px 22px; }
   .quiz-banner { padding-block: 64px; }
   .quiz-banner__inner { padding: 28px 22px; }
   .quiz-banner__action .button { width: 100%; }

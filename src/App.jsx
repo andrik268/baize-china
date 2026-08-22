@@ -37,6 +37,38 @@ const MAX_HREF = "https://max.ru/u/f9LHodD0cOIIDx6pG5WILnOJudHFpeJU2O83YpgmMthMi
 const MAX_CHANNEL_HREF = "https://max.ru/join/_iffpxt8pk9Rf29rOX1swElr4iSKT22FMtNA6yUC_NE";
 const VK_HREF = "https://vk.ru/study.holidays";
 
+// Video stories supplied by the client. The last three files are testimonials;
+// the first five are shown in the cases section. Keeping the paths in the app
+// means they remain visible even when the remote CMS still has an older block
+// snapshot without media fields.
+const CASE_VIDEO_SOURCES = [
+  "/assets/videos/8526131038840.mp4",
+  "/assets/videos/9001755413065.mp4",
+  "/assets/videos/18216247233144.mp4",
+  "/assets/videos/18216256932472.mp4",
+  "/assets/videos/18216264469112.mp4",
+];
+
+const CASE_VIDEO_FALLBACKS = [
+  { title: "Поступление в вуз", text: "История поступления и подготовки к учебе в Китае." },
+  { title: "Каникулы в Китае", text: "Как проходит поездка и погружение в китайскую культуру." },
+  { title: "Китайский язык", text: "Практика языка и заметный прогресс уже во время программы." },
+  { title: "Поддержка на каждом шаге", text: "Куратор рядом до, во время и после поездки." },
+  { title: "Новый опыт в Китае", text: "Еще одна реальная история участника программы Бай Цзэ." },
+];
+
+const REVIEW_VIDEO_SOURCES = [
+  "/assets/videos/18216269384312.mp4",
+  "/assets/videos/18216273709688.mp4",
+  "/assets/videos/18216283802232.mp4",
+];
+
+const REVIEW_VIDEO_FALLBACKS = [
+  { title: "Отзыв участника", text: "Личная история о поездке и впечатлениях от программы." },
+  { title: "Отзыв семьи", text: "Что особенно понравилось родителям и студентам." },
+  { title: "Опыт обучения", text: "Реальный отзыв о поддержке и результатах программы." },
+];
+
 function blockContent(cms, id) {
   return getBlock(cms, id)?.content || getBlock(defaultCmsData, id).content;
 }
@@ -365,11 +397,19 @@ function Reviews({ openForm }) {
           <p>{c.lead}</p>
           <button className="button button--ghost" onClick={() => openForm(c.button)}>{c.button} <ArrowRight size={18} /></button>
         </div>
-        <div className="reviews__empty reveal">
-          <div className="reviews__quote">“</div>
-          <strong>{c.emptyTitle}</strong>
-          <p>{c.emptyText}</p>
-          <a className="text-link" href={VK_HREF} target="_blank" rel="noreferrer">{c.linkText} <ArrowUpRight size={18} /></a>
+        <div className="reviews__videos reveal">
+          {REVIEW_VIDEO_SOURCES.map((video, index) => {
+            const item = REVIEW_VIDEO_FALLBACKS[index];
+            return (
+              <article className="review-video-card" key={video}>
+                <video className="review-video-card__video" controls preload="metadata" playsInline src={video} aria-label={item.title} />
+                <div className="review-video-card__body">
+                  <strong>{item.title}</strong>
+                  <p>{item.text}</p>
+                </div>
+              </article>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -378,6 +418,12 @@ function Reviews({ openForm }) {
 
 function Cases() {
   const cms = useCms(); const c = blockContent(cms, "cases"); const icons = [GraduationCap, GlobeHemisphereEast, Translate];
+  const cmsItems = c.items || [];
+  const items = CASE_VIDEO_SOURCES.map((video, index) => ({
+    ...CASE_VIDEO_FALLBACKS[index],
+    ...cmsItems[index],
+    video,
+  }));
   return (
     <section className="section cases" id="cases" aria-labelledby="cases-title">
       <div className="shell">
@@ -386,11 +432,15 @@ function Cases() {
           <p>{c.lead}</p>
         </div>
         <div className="cases__grid">
-            {(c.items || []).map(({ title, text, image }, index) => {
+            {items.map(({ title, text, image, video }, index) => {
               const Icon = icons[index % icons.length];
               return (
               <article className="case-card reveal" key={title}>
-              <img className="case-card__image" src={image?.path || image} alt={image?.alt || ""} loading="lazy" />
+              {video ? (
+                <video className="case-card__video" controls preload="metadata" playsInline src={video} aria-label={title} />
+              ) : (
+                <img className="case-card__image" src={image?.path || image} alt={image?.alt || ""} loading="lazy" />
+              )}
               <span className="case-card__icon"><Icon size={28} weight="duotone" /></span>
               <h3>{title}</h3>
               <p>{text}</p>
