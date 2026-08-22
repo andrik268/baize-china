@@ -1,18 +1,17 @@
 export const yingkouGallery = [
   { src: "/assets/yingkou/00-main-hall.jpg", alt: "Участники лагеря на общей встрече в Китае" },
   { src: "/assets/yingkou/01-train.jpg", alt: "Группа отправляется в лагерь через Москву" },
-  { src: "/assets/yingkou/02-airport.jpg", alt: "Участники лагеря в аэропорту Инкоу" },
+  { src: "/assets/yingkou/02-airport.jpg", alt: "Вечерний костёр участников лагеря в Китае" },
   { src: "/assets/yingkou/03-room.jpg", alt: "Номер проживания в Инкоу" },
   { src: "/assets/yingkou/04-meal.jpg", alt: "Обед участников лагеря в Китае" },
   { src: "/assets/yingkou/05-stage.jpg", alt: "Участники лагеря на сцене" },
   { src: "/assets/yingkou/06-pool.jpg", alt: "Отдых у бассейна" },
-  { src: "/assets/yingkou/07-water.jpg", alt: "Плавание и водные активности" },
-  { src: "/assets/yingkou/08-hall.jpg", alt: "Участники лагеря на общей встрече" },
+  { src: "/assets/yingkou/07-water.jpg", alt: "Участники лагеря на вечернем празднике" },
   { src: "/assets/yingkou/09-group.jpg", alt: "Группа детей и подростков в Китае" },
-  { src: "/assets/yingkou/10-friends.jpg", alt: "Участники лагеря вместе" },
-  { src: "/assets/yingkou/11-performance.jpg", alt: "Выступление участника лагеря" },
+  { src: "/assets/yingkou/10-friends.jpg", alt: "Участники лагеря на пляже у моря" },
+  { src: "/assets/yingkou/11-performance.jpg", alt: "Участница на стеклянном мосту в Китае" },
   { src: "/assets/yingkou/12-universal.jpg", alt: "Экскурсия в Universal Beijing Resort" },
-  { src: "/assets/yingkou/13-minion-land.jpg", alt: "Экскурсия в Minion Land" },
+  { src: "/assets/yingkou/13-minion-land.jpg", alt: "Участники лагеря в горах Китая" },
   { src: "/assets/yingkou/14-orchard.jpg", alt: "Экскурсия в фруктовый сад" },
 ];
 
