@@ -386,8 +386,11 @@ function Faq() {
   );
 }
 
-function Reviews({ openForm }) {
+function Reviews() {
   const cms = useCms(); const c = blockContent(cms, "reviews");
+  const lead = c.lead?.startsWith("Мы добавим сюда реальные истории")
+    ? "Личные впечатления участников о поездках, обучении и поддержке Бай Цзэ."
+    : c.lead;
   const [activeReview, setActiveReview] = useState(0);
   const activeItem = REVIEW_VIDEO_FALLBACKS[activeReview];
   const activeVideo = REVIEW_VIDEO_SOURCES[activeReview];
@@ -398,8 +401,7 @@ function Reviews({ openForm }) {
         <div className="reviews__lead reveal">
           <span className="reviews__mark"><ChatsCircle size={32} weight="duotone" /></span>
           <h2 id="reviews-title">{c.title}</h2>
-          <p>{c.lead}</p>
-          <button className="button button--ghost" onClick={() => openForm(c.button)}>{c.button} <ArrowRight size={18} /></button>
+          <p>{lead}</p>
         </div>
         <div className="reviews__videos reveal">
           <div className="reviews-slider" role="region" aria-roledescription="carousel" aria-label="Видео-отзывы">
@@ -842,7 +844,7 @@ export default function App() {
         <Programs openProgram={setProgram} />
         <Safety />
         <Language openForm={(title) => setForm({ title, goal: "Китайский язык" })} />
-        <Reviews openForm={(title) => setForm({ title, goal: "" })} />
+        <Reviews />
         <Cases />
         <QuizBanner openQuiz={() => setQuizOpen(true)} />
         <Contacts openForm={(title) => setForm({ title, goal: "" })} />
