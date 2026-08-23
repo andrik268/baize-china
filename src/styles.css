@@ -1072,7 +1072,7 @@ a:focus-visible,
 .reviews__layout {
   display: grid;
   grid-template-columns: 0.9fr 1.1fr;
-  align-items: stretch;
+  align-items: start;
   gap: 26px;
 }
 
@@ -1084,6 +1084,7 @@ a:focus-visible,
 }
 
 .reviews__lead {
+  align-self: start;
   background: var(--surface);
 }
 
