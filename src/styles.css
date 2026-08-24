@@ -1239,7 +1239,9 @@ a:focus-visible,
 .case-card__video {
   display: block;
   width: calc(100% + 56px);
-  aspect-ratio: 16 / 9;
+  /* Case clips are vertical (about 9:16). Match their native frame so the
+     whole story stays visible without either top/bottom cropping or side bars. */
+  aspect-ratio: 9 / 16;
   margin: 0 -28px 24px;
   background: #e5edf8;
   object-fit: cover;
