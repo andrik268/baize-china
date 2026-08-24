@@ -1243,6 +1243,7 @@ a:focus-visible,
   margin: 0 -28px 24px;
   background: #e5edf8;
   object-fit: cover;
+  object-position: center center;
 }
 
 .case-card__icon {
