@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowClockwise, ArrowSquareOut, Check, FloppyDisk, Image as ImageIcon, SignOut, UploadSimple, X } from "@phosphor-icons/react";
+import { ArrowClockwise, ArrowSquareOut, Check, FloppyDisk, Image as ImageIcon, SignOut, Trash, UploadSimple, X } from "@phosphor-icons/react";
 import { getRemoteSession, loadRemoteCms, loadRemoteLeads, loginRemote, logoutRemote, saveRemoteCms, uploadRemoteImage } from "./apiClient.js";
 import { ADMIN_LOGIN, CMS_SESSION_KEY, cloneCmsData, defaultCmsData, mergeCmsData } from "./cmsData.js";
 
@@ -8,7 +8,7 @@ const SECTIONS = [
 ];
 
 const labelize = (key) => ({
-  title: "Заголовок", lead: "Подзаголовок", text: "Текст", description: "Описание", image: "Изображение", cardImage: "Изображение карточки", alt: "Описание изображения", button: "Кнопка", primaryButton: "Основная кнопка", secondaryButton: "Вторая кнопка", address: "Адрес", phone: "Телефон", secondPhone: "Дополнительный телефон", email: "Электронная почта", linkText: "Текст ссылки", statement: "Акцентная фраза", eyebrow: "Надзаголовок", noteTitle: "Заголовок плашки", noteText: "Текст плашки", brand: "Название бренда", tagline: "Подпись бренда", ctaTitle: "Заголовок призыва", ctaText: "Текст призыва", copyright: "Копирайт", legalName: "Юридическое название", inn: "ИНН", maxChannelLabel: "Название канала MAX", maxChannelHref: "Ссылка на канал MAX",
+  title: "Заголовок", lead: "Подзаголовок", text: "Текст", description: "Описание", image: "Изображение", cardImage: "Изображение карточки", alt: "Описание изображения", button: "Кнопка", primaryButton: "Основная кнопка", primaryButtonHref: "Ссылка основной кнопки", secondaryButton: "Вторая кнопка", address: "Адрес", phone: "Телефон", phoneHref: "Ссылка телефона", secondPhone: "Дополнительный телефон", secondPhoneHref: "Ссылка дополнительного телефона", email: "Электронная почта", emailHref: "Ссылка электронной почты", href: "Ссылка", brandHref: "Ссылка логотипа", navigationHrefs: "Ссылки навигации", links: "Ссылки раздела", mapEmbed: "Ссылка карты", mapLink: "Ссылка «Открыть в картах»", linkText: "Текст ссылки", linkHref: "Ссылка текста", statement: "Акцентная фраза", eyebrow: "Надзаголовок", noteTitle: "Заголовок плашки", noteText: "Текст плашки", brand: "Название бренда", tagline: "Подпись бренда", ctaTitle: "Заголовок призыва", ctaText: "Текст призыва", copyright: "Копирайт", legalName: "Юридическое название", inn: "ИНН", maxChannelLabel: "Название канала MAX", maxChannelHref: "Ссылка на канал MAX",
 }[key] || key.replace(/([A-Z])/g, " $1").replace(/^./, (value) => value.toUpperCase()));
 
 function setPath(source, path, value) {
@@ -16,6 +16,16 @@ function setPath(source, path, value) {
   const keys = path.split(".");
   let cursor = next;
   keys.forEach((key, index) => { if (index === keys.length - 1) cursor[key] = value; else cursor = cursor[key]; });
+  return next;
+}
+
+function removeAtPath(source, path) {
+  const next = cloneCmsData(source);
+  const keys = path.split(".");
+  const index = Number(keys.pop());
+  let cursor = next;
+  keys.forEach((key) => { cursor = cursor[key]; });
+  if (Array.isArray(cursor) && Number.isInteger(index)) cursor.splice(index, 1);
   return next;
 }
 
@@ -49,10 +59,10 @@ function ScalarField({ label, value, onChange }) {
   return <label className="cms-field"><span>{label}</span>{multiline ? <textarea rows={4} value={value ?? ""} onChange={(event) => onChange(event.target.value)} /> : <input value={value ?? ""} onChange={(event) => onChange(event.target.value)} />}</label>;
 }
 
-function EditorNode({ value, label, path, onChange }) {
+function EditorNode({ value, label, path, onChange, onRemove }) {
   if (value && typeof value === "object" && !Array.isArray(value) && Object.prototype.hasOwnProperty.call(value, "path") && Object.prototype.hasOwnProperty.call(value, "alt")) return <ImageField label={label} value={value} onChange={(next) => onChange(path, next)} />;
-  if (Array.isArray(value)) return <div className="cms-array"><div className="cms-array-heading"><strong>{label}</strong><span>{value.length} элементов</span></div>{value.map((item, index) => <div className="cms-array-row" key={`${path}.${index}`}><div className="cms-array-row__title">{typeof item === "object" ? `Элемент ${index + 1}` : `${label} ${index + 1}`}</div><EditorNode value={item} label={typeof item === "object" ? "" : `Значение ${index + 1}`} path={`${path}.${index}`} onChange={onChange} /></div>)}</div>;
-  if (value && typeof value === "object") return <fieldset className="cms-object"><legend>{label}</legend>{Object.entries(value).filter(([key]) => !["id", "slug", "icon", "type", "isActive", "settings"].includes(key)).map(([key, child]) => <EditorNode key={`${path}.${key}`} value={child} label={labelize(key)} path={`${path}.${key}`} onChange={onChange} />)}</fieldset>;
+  if (Array.isArray(value)) return <div className="cms-array"><div className="cms-array-heading"><strong>{label}</strong><span>{value.length} элементов</span></div>{value.map((item, index) => <div className="cms-array-row" key={`${path}.${index}`}><div className="cms-array-row__top"><div className="cms-array-row__title">{typeof item === "object" ? `Элемент ${index + 1}` : `${label} ${index + 1}`}</div><button className="cms-array-row__remove" type="button" onClick={() => { if (window.confirm("Удалить этот элемент? Изменение применится после сохранения.")) onRemove(`${path}.${index}`); }}><Trash size={15} />Удалить</button></div><EditorNode value={item} label={typeof item === "object" ? "" : `Значение ${index + 1}`} path={`${path}.${index}`} onChange={onChange} onRemove={onRemove} /></div>)}</div>;
+  if (value && typeof value === "object") return <fieldset className="cms-object"><legend>{label}</legend>{Object.entries(value).filter(([key]) => !["id", "slug", "icon", "type", "isActive", "settings"].includes(key)).map(([key, child]) => <EditorNode key={`${path}.${key}`} value={child} label={labelize(key)} path={`${path}.${key}`} onChange={onChange} onRemove={onRemove} />)}</fieldset>;
   return <ScalarField label={label} value={value} onChange={(next) => onChange(path, next)} />;
 }
 
@@ -89,8 +99,9 @@ export function AdminApp() {
   if (loading) return <main className="cms-login"><div className="cms-login-card"><p>Загружаем панель…</p></div></main>;
   if (!user) return <LoginScreen onLogin={login} />;
   const update = (path, value) => setData((current) => setPath(current, path, value));
+  const remove = (path) => setData((current) => removeAtPath(current, path));
   return <div className="cms-shell">
     <aside className="cms-sidebar"><div className="cms-sidebar-brand"><span>白泽</span><div><strong>Бай Цзэ</strong><small>Редактор сайта</small></div></div><nav>{SECTIONS.map(([id, label]) => <button key={id} className={`${id === activeId ? "is-active" : ""}${id === "leads" ? " cms-nav-leads" : ""}`} onClick={() => setActiveId(id)}>{label}{id === "leads" && leads.length > 0 ? <span className="cms-nav-leads-count">{leads.length}</span> : null}</button>)}</nav><div className="cms-sidebar-bottom"><a href="/" target="_blank" rel="noreferrer">Открыть сайт <ArrowSquareOut size={16} /></a><button onClick={logout}><SignOut size={16} /> Выйти</button></div></aside>
-    <main className="cms-main"><header className="cms-topbar"><div><p className="cms-kicker">Админка / Бай Цзэ</p><h1>Редактор контента</h1></div><div className="cms-top-actions">{status ? <span className={status === "Сохранено" ? "cms-saved" : "cms-error"}>{status === "Сохранено" ? <Check size={17} /> : null}{status}</span> : null}{activeId !== "leads" ? <button className="cms-button cms-button--primary" onClick={save} disabled={saving}><FloppyDisk size={18} />{saving ? "Сохраняем…" : "Сохранить изменения"}</button> : null}</div></header><section className="cms-editor"><div className="cms-editor-intro"><span className="cms-section-number">{String(SECTIONS.findIndex(([id]) => id === activeId) + 1).padStart(2, "0")}</span><div><h2>{SECTIONS.find(([id]) => id === activeId)?.[1] || activeBlock.title}</h2><p>{activeId === "leads" ? "Здесь отображаются обращения посетителей сайта." : "Меняйте значения ниже и нажмите «Сохранить изменения». Фото можно загрузить прямо с компьютера."}</p></div></div>{activeId === "leads" ? <LeadsPanel leads={leads} loading={leadsLoading} onRefresh={refreshLeads} /> : <div className="cms-card cms-content-card"><EditorNode value={activeBlock.content} label="Содержимое блока" path={`page.blocks.${data.page.blocks.findIndex((block) => block.id === activeId)}.content`} onChange={update} /></div>}</section></main>
+    <main className="cms-main"><header className="cms-topbar"><div><p className="cms-kicker">Админка / Бай Цзэ</p><h1>Редактор контента</h1></div><div className="cms-top-actions">{status ? <span className={status === "Сохранено" ? "cms-saved" : "cms-error"}>{status === "Сохранено" ? <Check size={17} /> : null}{status}</span> : null}{activeId !== "leads" ? <button className="cms-button cms-button--primary" onClick={save} disabled={saving}><FloppyDisk size={18} />{saving ? "Сохраняем…" : "Сохранить изменения"}</button> : null}</div></header><section className="cms-editor"><div className="cms-editor-intro"><span className="cms-section-number">{String(SECTIONS.findIndex(([id]) => id === activeId) + 1).padStart(2, "0")}</span><div><h2>{SECTIONS.find(([id]) => id === activeId)?.[1] || activeBlock.title}</h2><p>{activeId === "leads" ? "Здесь отображаются обращения посетителей сайта." : "Меняйте значения ниже и нажмите «Сохранить изменения». Фото можно загрузить прямо с компьютера."}</p></div></div>{activeId === "leads" ? <LeadsPanel leads={leads} loading={leadsLoading} onRefresh={refreshLeads} /> : <div className="cms-card cms-content-card"><EditorNode value={activeBlock.content} label="Содержимое блока" path={`page.blocks.${data.page.blocks.findIndex((block) => block.id === activeId)}.content`} onChange={update} onRemove={remove} /></div>}</section></main>
   </div>;
 }

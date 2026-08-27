@@ -20,6 +20,7 @@ import {
 } from "@phosphor-icons/react";
 import {
   quizSteps,
+  programDetails,
   recommendProgram,
   yingkouGallery,
   universitySteps,
@@ -42,17 +43,17 @@ const VK_HREF = "https://vk.ru/study.holidays";
 // means they remain visible even when the remote CMS still has an older block
 // snapshot without media fields.
 const CASE_VIDEO_SOURCES = [
+  "/assets/videos/18335854955128.mp4",
   "/assets/videos/8526131038840.mp4",
-  "/assets/videos/9001755413065.mp4",
   "/assets/videos/18216247233144.mp4",
   "/assets/videos/18216256932472.mp4",
   "/assets/videos/18216264469112.mp4",
 ];
 
 const CASE_VIDEO_FALLBACKS = [
-  { title: "Поступление в вуз", text: "История поступления и подготовки к учебе в Китае." },
-  { title: "Каникулы в Китае", text: "Как проходит поездка и погружение в китайскую культуру." },
-  { title: "Китайский язык", text: "Практика языка и заметный прогресс уже во время программы." },
+  { title: "Поступление в вуз", text: "Реальная история поступления в китайский вуз." },
+  { title: "Каникулы в Китае", text: "Одно из любимых занятий на программе — фотосессия в национальных костюмах." },
+  { title: "Китайский язык", text: "«Дети все такие умные, хорошенькие...», — преподаватель китайского языка поделилась впечатлениями об участии в нашем летнем лагере." },
   { title: "Поддержка на каждом шаге", text: "Куратор рядом до, во время и после поездки." },
   { title: "Новый опыт в Китае", text: "Еще одна реальная история участника программы Бай Цзэ." },
 ];
@@ -69,9 +70,33 @@ const REVIEW_VIDEO_FALLBACKS = [
   { title: "Опыт обучения", text: "Реальный отзыв о поддержке и результатах программы." },
 ];
 
+const CASE_CONTENT_OVERRIDES = [
+  CASE_VIDEO_FALLBACKS[0],
+  CASE_VIDEO_FALLBACKS[1],
+  CASE_VIDEO_FALLBACKS[2],
+];
+
 function blockContent(cms, id) {
   return getBlock(cms, id)?.content || getBlock(defaultCmsData, id).content;
 }
+
+const FALLBACK_NAVIGATION_HREFS = {
+  Университеты: "#universities",
+  Визы: "#visa",
+  Каникулы: "#programs",
+  Сопровождение: "#safety",
+  Курсы: "#language",
+  "О нас": "#about",
+};
+
+const FALLBACK_FOOTER_LINKS = [
+  { label: "Университеты", href: "#universities" },
+  { label: "Как поступить", href: "#university" },
+  { label: "Визы", href: "#visa" },
+  { label: "Каникулы", href: "#programs" },
+  { label: "Сопровождение", href: "#safety" },
+  { label: "Китайский язык", href: "#language" },
+];
 
 const FALLBACK_SOCIALS = [
   { label: "WhatsApp", href: WHATSAPP_HREF, icon: "whatsapp" },
@@ -82,6 +107,10 @@ const FALLBACK_SOCIALS = [
 
 function getSocials(cms) {
   return blockContent(cms, "contacts").socials || FALLBACK_SOCIALS;
+}
+
+function getNavigationLinks(content) {
+  return (content.navigation || []).map((label) => [label, content.navigationHrefs?.[label] || FALLBACK_NAVIGATION_HREFS[label] || "#top"]);
 }
 
 const SOCIAL_ICON_PATHS = {
@@ -107,7 +136,7 @@ function Brand({ light = false }) {
   const cms = useCms();
   const brand = blockContent(cms, "header");
   return (
-    <a className={`brand ${light ? "brand--light" : ""}`} href="#top">
+    <a className={`brand ${light ? "brand--light" : ""}`} href={brand.brandHref || "#top"}>
       <span className="brand__mark" aria-hidden="true">
         <svg viewBox="0 0 48 48" role="presentation">
           <circle cx="24" cy="24" r="19" fill="none" stroke="currentColor" strokeWidth="1.2" opacity=".24" />
@@ -129,7 +158,7 @@ function Header({ openQuiz }) {
   const cms = useCms();
   const c = blockContent(cms, "header");
   const [menuOpen, setMenuOpen] = useState(false);
-  const links = (c.navigation || []).map((label) => [label, { "Университеты": "#universities", "Визы": "#visa", "Каникулы": "#programs", "Сопровождение": "#safety", "Курсы": "#language", "О нас": "#about" }[label] || "#top"]);
+  const links = getNavigationLinks(c);
 
   return (
     <header className="site-header">
@@ -173,7 +202,7 @@ function Hero({ openQuiz }) {
             {(c.services || []).map((service) => <span key={service}>{service}</span>)}
           </div>
           <div className="button-row">
-            <a className="button" href="#programs">{c.primaryButton} <ArrowRight size={18} /></a>
+            <a className="button" href={c.primaryButtonHref || "#programs"}>{c.primaryButton} <ArrowRight size={18} /></a>
             <button className="button button--ghost" onClick={openQuiz}>{c.secondaryButton}</button>
           </div>
         </div>
@@ -328,7 +357,7 @@ function Safety() {
           <div className="check-grid">
             {(c.points || []).map((point) => <span key={point}><Check size={18} weight="bold" />{point}</span>)}
           </div>
-          <a className="text-link" href="#contacts">{c.linkText} <ArrowRight size={18} /></a>
+          <a className="text-link" href={c.linkHref || "#contacts"}>{c.linkText} <ArrowRight size={18} /></a>
         </div>
       </div>
     </section>
@@ -447,6 +476,7 @@ function Cases() {
   const items = CASE_VIDEO_SOURCES.map((video, index) => ({
     ...CASE_VIDEO_FALLBACKS[index],
     ...cmsItems[index],
+    ...CASE_CONTENT_OVERRIDES[index],
     video,
   }));
   return (
@@ -563,6 +593,9 @@ function Contacts({ openForm }) {
   const cms = useCms(); const c = blockContent(cms, "contacts");
   const maxChannelHref = c.maxChannelHref || MAX_CHANNEL_HREF;
   const maxChannelLabel = c.maxChannelLabel || "Канал MAX";
+  const phoneHref = c.phoneHref || `tel:${String(c.phone || "").replace(/\D/g, "")}`;
+  const secondPhoneHref = c.secondPhoneHref || `tel:${String(c.secondPhone || "").replace(/\D/g, "")}`;
+  const emailHref = c.emailHref || `mailto:${c.email || ""}`;
   return (
     <section className="section contacts" id="contacts">
       <div className="shell contacts__grid">
@@ -570,9 +603,9 @@ function Contacts({ openForm }) {
           <h2>{c.title}</h2>
           <p>{c.address}</p>
           <div className="contact-list">
-            <a href={`tel:${String(c.phone).replace(/\D/g, "")}`}><Phone size={22} />{c.phone}</a>
-            <a href={`tel:${String(c.secondPhone).replace(/\D/g, "")}`}><Phone size={22} />{c.secondPhone}</a>
-            <a href={`mailto:${c.email}`}><EnvelopeSimple size={22} />{c.email}</a>
+            <a href={phoneHref}><Phone size={22} />{c.phone}</a>
+            <a href={secondPhoneHref}><Phone size={22} />{c.secondPhone}</a>
+            <a href={emailHref}><EnvelopeSimple size={22} />{c.email}</a>
           </div>
           <a className="contacts__channel" href={maxChannelHref} target="_blank" rel="noreferrer">
             <span className="contacts__channel-icon"><SocialIcon name="max" size={22} /></span>
@@ -597,11 +630,12 @@ function Contacts({ openForm }) {
 
 function Footer({ setLegal }) {
   const cms = useCms(); const c = blockContent(cms, "footer"); const socials = getSocials(cms);
+  const footerLinks = c.links || FALLBACK_FOOTER_LINKS;
   return (
     <footer className="footer">
       <div className="shell footer__grid">
         <div><Brand light /><p>{c.text}</p></div>
-        <div><h3>Направления</h3><a href="#universities">Университеты</a><a href="#university">Как поступить</a><a href="#visa">Визы</a><a href="#programs">Каникулы</a><a href="#safety">Сопровождение</a><a href="#language">Китайский язык</a></div>
+        <div><h3>Направления</h3>{footerLinks.map((link) => <a href={link.href || "#top"} key={`${link.label}-${link.href}`}>{link.label}</a>)}</div>
         <div><h3>Связаться</h3>{socials.map((social) => <a className="footer__social-link" href={social.href} target="_blank" rel="noreferrer" key={social.label}><SocialIcon name={social.icon} size={18} />{social.label}</a>)}</div>
         <div><h3>Документы</h3><button onClick={() => setLegal("privacy")}>Политика ПДн</button><button onClick={() => setLegal("offer")}>Публичная оферта</button><p>{c.legalName}<br />{c.inn}</p></div>
       </div>
@@ -671,6 +705,7 @@ function ProgramModal({ program, onClose, openForm }) {
     ? (program.gallery?.length ? program.gallery : yingkouGallery)
     : [{ src: program.image?.path || program.image, alt: program.title }];
   const currentSlide = gallery[slide] || gallery[0];
+  const details = program.details?.length ? program.details : programDetails[program.slug] || [];
   const moveSlide = (direction) => setSlide((value) => (value + direction + gallery.length) % gallery.length);
 
   return (
@@ -706,7 +741,9 @@ function ProgramModal({ program, onClose, openForm }) {
       <div className="program-modal__copy">
         <small>{program.meta}</small><h2>{program.title}</h2><p>{program.description}</p>
         <div><Sparkle size={20} /><span><strong>Кому подойдёт</strong>{program.fit}</span></div>
-        <p>Даты, стоимость, точная программа и условия участия подтверждаются менеджером после короткой консультации.</p>
+        <div className="program-modal__details">
+          {details.map((detail) => <p key={detail}>{detail}</p>)}
+        </div>
         <button className="button button--wide program-modal__cta" onClick={() => { onClose(); openForm(`Получить презентацию: ${program.title}`); }}>Получить презентацию <ArrowRight size={18} /></button>
       </div>
     </Modal>

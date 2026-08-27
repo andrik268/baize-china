@@ -13,8 +13,8 @@ const defaultBlocks = [
   {
     id: "header", type: "header", title: "Шапка сайта", isActive: true,
     content: {
-      brand: "Бай Цзэ", tagline: "Учеба и каникулы в Китае", phone: "+7 (903) 450-54-43", phoneHref: "tel:+79034505443",
-      navigation: ["Университеты", "Визы", "Каникулы", "Сопровождение", "Курсы", "О нас"], buttonText: "Подобрать программу",
+      brand: "Бай Цзэ", tagline: "Учеба и каникулы в Китае", phone: "+7 (903) 450-54-43", phoneHref: "tel:+79034505443", brandHref: "#top",
+      navigation: ["Университеты", "Визы", "Каникулы", "Сопровождение", "Курсы", "О нас"], navigationHrefs: { "Университеты": "#universities", "Визы": "#visa", "Каникулы": "#programs", "Сопровождение": "#safety", "Курсы": "#language", "О нас": "#about" }, buttonText: "Подобрать программу",
     },
   },
   {
@@ -22,7 +22,7 @@ const defaultBlocks = [
     content: {
       eyebrow: "Бай Цзэ", title: "Учеба и каникулы в Китае", lead: "Открываем Китай для вас и ваших детей",
       services: ["Помогаем выбрать вуз и получить грант", "Организуем каникулы мечты с погружением в язык, культуру и технологии будущего"],
-      primaryButton: "Смотреть программы", secondaryButton: "Подобрать за 1 минуту",
+      primaryButton: "Смотреть программы", primaryButtonHref: "#programs", secondaryButton: "Подобрать за 1 минуту",
       image: image("/assets/hero-campus.webp", "Подростки с куратором на современном кампусе в Китае"),
       noteTitle: "С 2008 года", noteText: "помогаем учиться за границей",
     },
@@ -80,7 +80,7 @@ const defaultBlocks = [
   },
   {
     id: "safety", type: "safety", title: "Сопровождение", isActive: true,
-    content: { title: "Мы летим вместе с вами", text: "Вам не придётся переживать за ребёнка в аэропорту или чужой стране. Кураторы сопровождают группу от вылета из Краснодара или Москвы до возвращения домой.", image: image("/assets/airport-support.webp", "Куратор сопровождает подростков в аэропорту"), points: ["Встреча и проводы", "24/7 связь с родителями", "Медицинская страховка", "Проверенное питание"], linkText: "Задать вопрос о безопасности" },
+    content: { title: "Мы летим вместе с вами", text: "Вам не придётся переживать за ребёнка в аэропорту или чужой стране. Кураторы сопровождают группу от вылета из Краснодара или Москвы до возвращения домой.", image: image("/assets/airport-support.webp", "Куратор сопровождает подростков в аэропорту"), points: ["Встреча и проводы", "24/7 связь с родителями", "Медицинская страховка", "Проверенное питание"], linkText: "Задать вопрос о безопасности", linkHref: "#contacts" },
   },
   {
     id: "language", type: "language", title: "Курсы", isActive: true,
@@ -100,11 +100,11 @@ const defaultBlocks = [
   },
   {
     id: "contacts", type: "contacts", title: "Контакты", isActive: true,
-    content: { title: "Приходите на бесплатную консультацию", address: "Краснодар, ул. Красная 160, 3-й этаж, офис 307", phone: "+7 (903) 450-54-43", secondPhone: "+7 (995) 321-84-01", email: "kubancenter@mail.ru", button: "Записаться", mapEmbed: "https://yandex.ru/map-widget/v1/?ll=38.976454%2C45.039808&mode=search&ol=geo&pt=38.976454%2C45.039808%2Cpm2rdm&z=16&lang=ru_RU", mapLink: "https://yandex.ru/maps/?text=Краснодар%2C%20Красная%20160", socials: [{ label: "WhatsApp", href: "https://wa.me/qr/NL4IWGGHHW3HL1", icon: "whatsapp" }, { label: "Telegram", href: "https://t.me/chinainsummer", icon: "telegram" }, { label: "MAX", href: "https://max.ru/u/f9LHodD0cOIIDx6pG5WILnOJudHFpeJU2O83YpgmMthMi0cPQNv2JWO20gM", icon: "max" }, { label: "ВКонтакте", href: "https://vk.ru/study.holidays", icon: "vk" }], maxChannelLabel: "Канал MAX", maxChannelHref: "https://max.ru/join/_iffpxt8pk9Rf29rOX1swElr4iSKT22FMtNA6yUC_NE" },
+    content: { title: "Приходите на бесплатную консультацию", address: "Краснодар, ул. Красная 160, 3-й этаж, офис 307", phone: "+7 (903) 450-54-43", phoneHref: "tel:+79034505443", secondPhone: "+7 (995) 321-84-01", secondPhoneHref: "tel:+79953218401", email: "kubancenter@mail.ru", emailHref: "mailto:kubancenter@mail.ru", button: "Записаться", mapEmbed: "https://yandex.ru/map-widget/v1/?ll=38.976454%2C45.039808&mode=search&ol=geo&pt=38.976454%2C45.039808%2Cpm2rdm&z=16&lang=ru_RU", mapLink: "https://yandex.ru/maps/?text=Краснодар%2C%20Красная%20160", socials: [{ label: "WhatsApp", href: "https://wa.me/qr/NL4IWGGHHW3HL1", icon: "whatsapp" }, { label: "Telegram", href: "https://t.me/chinainsummer", icon: "telegram" }, { label: "MAX", href: "https://max.ru/u/f9LHodD0cOIIDx6pG5WILnOJudHFpeJU2O83YpgmMthMi0cPQNv2JWO20gM", icon: "max" }, { label: "ВКонтакте", href: "https://vk.ru/study.holidays", icon: "vk" }], maxChannelLabel: "Канал MAX", maxChannelHref: "https://max.ru/join/_iffpxt8pk9Rf29rOX1swElr4iSKT22FMtNA6yUC_NE" },
   },
   {
     id: "footer", type: "footer", title: "Подвал", isActive: true,
-    content: { text: "Учеба, языковые программы и каникулы в Китае с полным сопровождением.", copyright: "© 2026 Бай Цзэ", address: "Краснодар, ул. Красная 160", legalName: "ИП Лазаренко Наталья Леонидовна", inn: "ИНН 231009681142" },
+    content: { text: "Учеба, языковые программы и каникулы в Китае с полным сопровождением.", links: [{ label: "Университеты", href: "#universities" }, { label: "Как поступить", href: "#university" }, { label: "Визы", href: "#visa" }, { label: "Каникулы", href: "#programs" }, { label: "Сопровождение", href: "#safety" }, { label: "Китайский язык", href: "#language" }], copyright: "© 2026 Бай Цзэ", address: "Краснодар, ул. Красная 160", legalName: "ИП Лазаренко Наталья Леонидовна", inn: "ИНН 231009681142" },
   },
 ];
 

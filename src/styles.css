@@ -771,7 +771,8 @@ a:focus-visible,
 .program-grid {
   display: grid;
   grid-template-columns: 1.4fr 0.85fr 0.85fr;
-  grid-template-rows: 360px 320px;
+  grid-template-rows: 360px 320px 300px;
+  grid-auto-rows: 300px;
   gap: 18px;
 }
 
@@ -2255,7 +2256,7 @@ a:focus-visible,
   .header__phone { display: none; }
   .hero__grid { grid-template-columns: minmax(0, 0.9fr) minmax(450px, 1.1fr); gap: 42px; }
   .hero__visual { min-height: 520px; }
-  .program-grid { grid-template-columns: 1.2fr 1fr; grid-template-rows: 430px 310px 310px; }
+  .program-grid { grid-template-columns: 1.2fr 1fr; grid-template-rows: 430px 310px 310px 310px; grid-auto-rows: 310px; }
   .program-card--1 { grid-row: 1; grid-column: 1 / span 2; }
   .program-card--4 { grid-column: auto; }
   .study-abroad__heading { gap: 36px; }

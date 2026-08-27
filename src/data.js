@@ -15,6 +15,28 @@ export const yingkouGallery = [
   { src: "/assets/yingkou/14-orchard.jpg", alt: "Экскурсия в фруктовый сад" },
 ];
 
+export const programDetails = {
+  "yingkou-beijing": [
+    "Летний языковой лагерь, где дети отдыхают и учатся, путешествуют и развиваются. Максимум познавательных активностей, полезных развлечений и потрясающих впечатлений.",
+  ],
+  chengdu: [
+    "Лагерь в Чэнду. 9 дней ярких открытий на осенних или весенних каникулах. Для детей 8-16 лет. Живое общение со сверстниками, магия древних ремесел и незабываемая встреча с пандами — настоящий Китай, который влюбляет в себя с первого дня.",
+  ],
+  harbin: [
+    "4 недели в «Летней столице» Китая, в кампусе легендарного HIT, полное погружение в эталонный путунхуа, уроки с носителями, живая практика и экскурсии по «Восточному Парижу». Идеальный шанс заговорить на китайском свободно и получить международный сертификат!",
+  ],
+  shenzhen: [
+    "Разработка и сборка собственного летательного аппарата. Освоение 3D-моделирования и систем управления полётом. Полётный челлендж — DJI FPV Flight Challenge. Сертификат об окончании программы. Проживание в Hilton, питание «шведский стол». Тур по району Большого залива Гуандун–Гонконг–Макао.",
+  ],
+  hangzhou: [
+    "Ежегодно, в июле, 3,5 недели летняя языковая стажировка в одном из старейших университетов — Чжэцзянском торгово-промышленном университете. Экскурсии и путешествия, чайные церемонии, создание собственной лапши, фотосессия в традиционном платье, дроны и роботы в Ханчжоу, экскурсия в IT-корпорацию Alibaba.",
+  ],
+  hainan: [
+    "Зимний языковой лагерь под пальмами на острове Хайнань для подростков от 13 лет.",
+    "10 дней в Пекинском университете (Хайнаньский кампус) — главном мировом центре изучения китайского языка и культуры: китайский язык, мастер-классы, спортивные активности, экскурсии и развлечения. Поймай лето в январе!",
+  ],
+};
+
 export const programs = [
   {
     slug: "chengdu",
@@ -24,6 +46,7 @@ export const programs = [
     image: "/assets/chengdu-family.webp",
     cardImage: "/assets/cards/chengdu-family.webp",
     fit: "Культура и первая самостоятельная поездка",
+    details: programDetails.chengdu,
   },
   {
     slug: "yingkou-beijing",
@@ -34,6 +57,7 @@ export const programs = [
     cardImage: yingkouGallery[0].src,
     gallery: yingkouGallery,
     fit: "Отдых, язык и семейная программа",
+    details: programDetails["yingkou-beijing"],
   },
   {
     slug: "shenzhen",
@@ -43,6 +67,7 @@ export const programs = [
     image: "/assets/shenzhen-drone.webp",
     cardImage: "/assets/cards/shenzhen-drone.webp",
     fit: "Технологии, дроны, робототехника и IT",
+    details: programDetails.shenzhen,
   },
   {
     slug: "harbin",
@@ -52,6 +77,7 @@ export const programs = [
     image: "/assets/hero-campus.webp",
     cardImage: "/assets/cards/hero-campus.webp",
     fit: "Поступление и знакомство с университетом",
+    details: programDetails.harbin,
   },
   {
     slug: "hangzhou",
@@ -61,6 +87,7 @@ export const programs = [
     image: "/assets/hero-campus.webp",
     cardImage: "/assets/cards/hero-campus.webp",
     fit: "Языковая практика и университетская среда",
+    details: programDetails.hangzhou,
   },
   {
     slug: "hainan",
@@ -70,6 +97,7 @@ export const programs = [
     image: "/assets/hainan-language.webp",
     cardImage: "/assets/cards/hainan-language.webp",
     fit: "Семья, мягкий старт и оздоровительный отдых",
+    details: programDetails.hainan,
   },
 ];
 
