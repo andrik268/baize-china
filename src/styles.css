@@ -1121,6 +1121,10 @@ a:focus-visible,
   color: var(--ink-muted);
 }
 
+.reviews__review-button {
+  margin-top: 2px;
+}
+
 .review-video-card {
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--white) 16%, transparent);
@@ -1254,6 +1258,76 @@ a:focus-visible,
   background: #e5edf8;
   object-fit: cover;
   object-position: center center;
+}
+
+.news {
+  background: var(--sky);
+}
+
+.news .heading-stack {
+  max-width: 760px;
+  margin-bottom: 34px;
+}
+
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.news-card {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: 0 14px 34px rgba(24, 66, 105, 0.06);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.news-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 42px rgba(24, 66, 105, 0.11);
+}
+
+.news-card__media {
+  height: 230px;
+  overflow: hidden;
+  background: var(--sky-strong);
+}
+
+.news-card__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.news-card__body {
+  display: grid;
+  gap: 10px;
+  padding: 22px 22px 25px;
+}
+
+.news-card__body time {
+  color: var(--terracotta);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.news-card__body h3 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 1.25rem;
+  line-height: 1.16;
+}
+
+.news-card__body p {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 0.95rem;
+  line-height: 1.55;
 }
 
 .case-card__icon {
@@ -1909,6 +1983,7 @@ a:focus-visible,
 
 .lead-form input,
 .lead-form select,
+.lead-form textarea,
 .quiz-final input {
   width: 100%;
   min-height: 52px;
@@ -1920,8 +1995,17 @@ a:focus-visible,
   outline: none;
 }
 
+.lead-form textarea {
+  min-height: 130px;
+  padding: 13px 15px;
+  resize: vertical;
+  font: inherit;
+  line-height: 1.5;
+}
+
 .lead-form input:focus,
 .lead-form select:focus,
+.lead-form textarea:focus,
 .quiz-final input:focus {
   border-color: var(--blue);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--blue) 13%, transparent);
@@ -2311,6 +2395,7 @@ a:focus-visible,
   .language__layout,
   .reviews__layout,
   .contacts__grid { grid-template-columns: 1fr; }
+  .news-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .safety__media img { height: 520px; }
   .safety__badge { right: 18px; }
   .detail__intro { position: static; }
@@ -2356,6 +2441,8 @@ a:focus-visible,
   .university-accordion > summary { padding: 20px; }
   .university-accordion__body { grid-template-columns: 1fr; }
   .cases__grid { grid-template-columns: 1fr; }
+  .news-grid { grid-template-columns: 1fr; }
+  .news-card__media { height: 210px; }
   .safety__media img { height: 440px; }
   .safety__copy > p { font-size: 1rem; }
   .check-grid { grid-template-columns: 1fr; }

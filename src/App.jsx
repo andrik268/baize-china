@@ -82,6 +82,7 @@ const FALLBACK_NAVIGATION_HREFS = {
   Сопровождение: "#safety",
   Курсы: "#language",
   "О нас": "#about",
+  Новости: "#news",
 };
 
 const FALLBACK_FOOTER_LINKS = [
@@ -105,7 +106,21 @@ function getSocials(cms) {
 }
 
 function getNavigationLinks(content) {
-  return (content.navigation || []).map((label) => [label, content.navigationHrefs?.[label] || FALLBACK_NAVIGATION_HREFS[label] || "#top"]);
+  const labels = content.navigation || [];
+  const navigation = labels.some((label) => label === "Новости") ? labels : [...labels, "Новости"];
+  return navigation.map((label) => [label, content.navigationHrefs?.[label] || FALLBACK_NAVIGATION_HREFS[label] || "#top"]);
+}
+
+function mediaPath(value) {
+  if (typeof value === "string") return value;
+  return value?.path || value?.src || "";
+}
+
+function formatNewsDate(value) {
+  if (!value) return "";
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return String(value);
+  return new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long", year: "numeric" }).format(parsed);
 }
 
 const SOCIAL_ICON_PATHS = {
@@ -410,7 +425,7 @@ function Faq() {
   );
 }
 
-function Reviews() {
+function Reviews({ openReviewForm }) {
   const cms = useCms(); const c = blockContent(cms, "reviews");
   const cmsItems = Array.isArray(c.items) ? c.items.filter((item) => item.isActive !== false && item.video?.path) : [];
   const items = cmsItems.length ? cmsItems : REVIEW_VIDEO_FALLBACKS.map((item, index) => ({ ...item, video: { path: REVIEW_VIDEO_SOURCES[index], kind: "video" } }));
@@ -430,6 +445,7 @@ function Reviews() {
           <span className="reviews__mark"><ChatsCircle size={32} weight="duotone" /></span>
           <h2 id="reviews-title">{c.title}</h2>
           <p>{c.lead}</p>
+          {openReviewForm ? <button className="button button--ghost reviews__review-button" type="button" onClick={openReviewForm}>{c.reviewButton || "Оставить отзыв"} <ArrowRight size={18} /></button> : null}
         </div>
         <div className="reviews__videos reveal">
           <div className="reviews-slider" role="region" aria-roledescription="carousel" aria-label="Видео-отзывы">
@@ -463,6 +479,42 @@ function Reviews() {
               </button>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function News() {
+  const cms = useCms();
+  const posts = Array.isArray(cms.posts) ? cms.posts.filter((post) => post?.isPublished !== false) : [];
+  const fallbackImages = ["/assets/hero-campus.webp", "/assets/chengdu-family.webp", "/assets/hainan-language.webp"];
+
+  if (!posts.length) return null;
+  return (
+    <section className="section news" id="news" aria-labelledby="news-title">
+      <div className="shell">
+        <div className="heading-stack reveal">
+          <p className="eyebrow">Бай Цзэ · Новости</p>
+          <h2 id="news-title">Новости</h2>
+          <p>Полезные материалы, новые программы и важные даты для тех, кто планирует учёбу и каникулы в Китае.</p>
+        </div>
+        <div className="news-grid">
+          {posts.map((post, index) => {
+            const cover = mediaPath(post.coverImage) || fallbackImages[index % fallbackImages.length];
+            return (
+              <article className="news-card reveal" key={post.id || `${post.title}-${index}`}>
+                <div className="news-card__media">
+                  <img src={cover} alt={post.title || "Новость Бай Цзэ"} loading="lazy" />
+                </div>
+                <div className="news-card__body">
+                  {post.publishedAt ? <time dateTime={post.publishedAt}>{formatNewsDate(post.publishedAt)}</time> : null}
+                  <h3>{post.title}</h3>
+                  {post.description ? <p>{post.description}</p> : null}
+                </div>
+              </article>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -699,6 +751,58 @@ function LeadForm({ title, onClose, defaultGoal = "" }) {
   );
 }
 
+function ReviewForm({ onClose }) {
+  const cms = useCms();
+  const forms = blockContent(cms, "forms");
+  const programs = blockContent(cms, "programs").programs || [];
+  const [state, setState] = useState("idle");
+  const [error, setError] = useState("");
+
+  async function submit(event) {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    if (!data.get("name") || !data.get("message") || !data.get("consent")) {
+      setError(forms.reviewValidationError || "Заполните имя, отзыв и подтвердите согласие на публикацию.");
+      return;
+    }
+
+    setError("");
+    setState("loading");
+    try {
+      await submitLead({
+        name: data.get("name"),
+        contact: data.get("contact") || "",
+        message: data.get("message"),
+        source: "review",
+        fields: { program: data.get("program") || "", rating: data.get("rating") || "5" },
+      });
+      setState("success");
+    } catch (submitError) {
+      setError(submitError.message || "Не удалось отправить отзыв. Попробуйте ещё раз.");
+      setState("idle");
+    }
+  }
+
+  if (state === "success") {
+    return <div className="form-success"><Check size={36} weight="bold" /><h2>{forms.reviewSuccessTitle || "Спасибо за отзыв!"}</h2><p>{forms.reviewSuccessText || "Отзыв отправлен на проверку и появится на сайте после согласования."}</p><button className="button" type="button" onClick={onClose}>{forms.successButton || "Готово"}</button></div>;
+  }
+
+  return (
+    <form className="lead-form review-form" onSubmit={submit} noValidate>
+      <h2>{forms.reviewTitle || "Оставить отзыв"}</h2>
+      <p>{forms.reviewIntro || "Расскажите, как прошла поездка или обучение. Отзыв появится на сайте после проверки менеджером."}</p>
+      <label>{forms.reviewNameLabel || "Ваше имя"}<input name="name" autoComplete="name" /></label>
+      <label>{forms.reviewContactLabel || "Телефон или email (необязательно)"}<input name="contact" autoComplete="email" /></label>
+      <label>{forms.reviewProgramLabel || "Программа"}<select name="program" defaultValue=""><option value="">{forms.reviewProgramPlaceholder || "Выберите программу"}</option>{programs.filter((program) => program?.title).map((program) => <option key={program.slug || program.title}>{program.title}</option>)}</select></label>
+      <label>{forms.reviewRatingLabel || "Оценка"}<select name="rating" defaultValue="5"><option value="5">★★★★★ Отлично</option><option value="4">★★★★ Очень хорошо</option><option value="3">★★★ Хорошо</option><option value="2">★★ Есть что улучшить</option><option value="1">★ Нужна обратная связь</option></select></label>
+      <label>{forms.reviewTextLabel || "Ваш отзыв"}<textarea name="message" rows="5" placeholder="Напишите несколько предложений о вашем опыте" /></label>
+      <label className="checkbox"><input type="checkbox" name="consent" /><span>{forms.reviewConsentLabel || "Согласен на обработку персональных данных и публикацию отзыва после проверки"}</span></label>
+      {error ? <p className="form-error" role="alert">{error}</p> : null}
+      <button className="button button--wide" type="submit" disabled={state === "loading"}>{state === "loading" ? (forms.loadingLabel || "Отправляем...") : (forms.reviewSubmitLabel || "Отправить отзыв")}</button>
+    </form>
+  );
+}
+
 function ProgramModal({ program, onClose, openForm }) {
   const [slide, setSlide] = useState(0);
   const gallery = program.gallery?.length
@@ -819,6 +923,7 @@ export default function App() {
   const [quizOpen, setQuizOpen] = useState(false);
   const [program, setProgram] = useState(null);
   const [form, setForm] = useState(null);
+  const [reviewOpen, setReviewOpen] = useState(false);
   const [legal, setLegal] = useState(null);
   const socials = getSocials(cmsData);
 
@@ -859,8 +964,9 @@ export default function App() {
         <Programs openProgram={setProgram} />
         <Safety />
         <Language openForm={(title) => setForm({ title, goal: "Китайский язык" })} />
-        <Reviews />
+        <Reviews openReviewForm={() => setReviewOpen(true)} />
         <Cases />
+        <News />
         <QuizBanner openQuiz={() => setQuizOpen(true)} />
         <Contacts openForm={(title) => setForm({ title, goal: "" })} />
       </main>
@@ -871,6 +977,7 @@ export default function App() {
       {quizOpen && <QuizModal onClose={() => setQuizOpen(false)} />}
       {program && <ProgramModal program={program} onClose={() => setProgram(null)} openForm={(title) => setForm({ title, goal: "Каникулы в Китае" })} />}
       {form && <Modal onClose={() => setForm(null)} className="form-modal"><LeadForm title={form.title} defaultGoal={form.goal} onClose={() => setForm(null)} /></Modal>}
+      {reviewOpen && <Modal onClose={() => setReviewOpen(false)} className="form-modal"><ReviewForm onClose={() => setReviewOpen(false)} /></Modal>}
       {legal && <LegalModal type={legal} onClose={() => setLegal(null)} />}
       </>
     </CmsContext.Provider>

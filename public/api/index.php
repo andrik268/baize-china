@@ -151,6 +151,14 @@ function clean_string(mixed $value, int $maxLength = 500): string
     return substr($value, 0, $maxLength);
 }
 
+function media_path_value(mixed $value, int $maxLength = 255): string
+{
+    if (is_array($value)) {
+        $value = $value['path'] ?? ($value['src'] ?? '');
+    }
+    return clean_string($value, $maxLength);
+}
+
 function json_encode_field(mixed $value): string
 {
     return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?: '{}';
@@ -507,9 +515,9 @@ function save_posts(PDO $pdo, int $siteId, array $posts): void
             $postKey,
             clean_string($post['title'] ?? 'Post', 255),
             (string)($post['description'] ?? ''),
-            clean_string($post['coverImage'] ?? '', 255),
+            media_path_value($post['coverImage'] ?? ''),
             clean_string($post['authorName'] ?? '', 190),
-            clean_string($post['authorImage'] ?? '', 255),
+            media_path_value($post['authorImage'] ?? ''),
             (string)($post['seoKeywords'] ?? ''),
             !empty($post['isPublished']) ? 1 : 0,
             (int)($post['sortOrder'] ?? (($index + 1) * 10)),
@@ -626,8 +634,13 @@ function create_lead(): void
     $source = clean_string($input['source'] ?? 'site', 80) ?: 'site';
     $fields = $input['fields'] ?? null;
 
-    if ($contact === '') {
+    // A public review only needs a name and a message; contact details remain
+    // optional. Consultation and quiz forms still require a callback contact.
+    if ($contact === '' && $source !== 'review') {
         json_response(['ok' => false, 'message' => 'Contact is required'], 422);
+    }
+    if ($source === 'review' && $message === '') {
+        json_response(['ok' => false, 'message' => 'Review message is required'], 422);
     }
 
     $statement = database()->prepare(

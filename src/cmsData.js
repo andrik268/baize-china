@@ -98,7 +98,7 @@ const defaultBlocks = [
   {
     id: "reviews", type: "reviews", title: "Отзывы", isActive: true,
     content: {
-      title: "Отзывы", lead: "Личные впечатления участников о поездках, обучении и поддержке Бай Цзэ.",
+      title: "Отзывы", lead: "Личные впечатления участников о поездках, обучении и поддержке Бай Цзэ.", reviewButton: "Оставить отзыв",
       items: [
         { title: "Отзыв участника", text: "Личная история о поездке и впечатлениях от программы.", video: video("/assets/videos/18216269384312.mp4", "Видео-отзыв участника"), isActive: true },
         { title: "Отзыв семьи", text: "Что особенно понравилось родителям и студентам.", video: video("/assets/videos/18216273709688.mp4", "Видео-отзыв семьи"), isActive: true },
@@ -135,6 +135,7 @@ const defaultBlocks = [
     id: "forms", type: "forms", title: "Формы и системные тексты", isActive: true,
     content: {
       leadIntro: "Оставьте контакты. Первая консультация бесплатна.", nameLabel: "Ваше имя", phoneLabel: "Телефон", goalLabel: "Направление", goalPlaceholder: "Выберите направление", consentLabel: "Согласен с политикой обработки персональных данных", validationError: "Заполните имя, телефон и подтвердите согласие на обработку данных.", submitLabel: "Отправить заявку", loadingLabel: "Отправляем...", successTitle: "Спасибо!", successText: "Заявка подготовлена. Менеджер свяжется с вами в рабочее время.", successButton: "Готово",
+      reviewTitle: "Оставить отзыв", reviewIntro: "Расскажите, как прошла поездка или обучение. Отзыв появится на сайте после проверки менеджером.", reviewNameLabel: "Ваше имя", reviewContactLabel: "Телефон или email (необязательно)", reviewProgramLabel: "Программа", reviewProgramPlaceholder: "Выберите программу", reviewRatingLabel: "Оценка", reviewTextLabel: "Ваш отзыв", reviewConsentLabel: "Согласен на обработку персональных данных и публикацию отзыва после проверки", reviewValidationError: "Заполните имя, отзыв и подтвердите согласие на публикацию.", reviewSubmitLabel: "Отправить отзыв", reviewSuccessTitle: "Спасибо за отзыв!", reviewSuccessText: "Отзыв отправлен на проверку и появится на сайте после согласования.",
     },
   },
   {
@@ -163,7 +164,53 @@ const defaultBlocks = [
 export const defaultCmsData = {
   site: { id: "site-baize", name: "Бай Цзэ | Учеба и каникулы в Китае", domain: "china-baize.ru" },
   page: { id: "home", siteId: "site-baize", title: "Главная", slug: "/", seoTitle: "Бай Цзэ | Учеба и каникулы в Китае", seoDescription: "Поступление в китайские университеты, языковые курсы и каникулы в Китае с полным сопровождением.", blocks: defaultBlocks },
-  posts: [],
+  // Initial publications make the new news section useful immediately. They
+  // are ordinary CMS records, so an administrator can edit, hide or replace
+  // every title, date, description and cover from the News section.
+  posts: [
+    {
+      id: "news-grants-china",
+      title: "Как получить грант на обучение в Китае",
+      description: "Разбираем основные требования, сроки и шаги подачи документов вместе с куратором.",
+      coverImage: "/assets/hero-campus.webp",
+      authorName: "Бай Цзэ",
+      authorImage: "",
+      seoKeywords: "грант обучение в Китае, поступление",
+      isPublished: true,
+      sortOrder: 10,
+      publishedAt: "2026-08-18",
+      updatedAt: "",
+      body: [],
+    },
+    {
+      id: "news-chengdu-autumn",
+      title: "Осенние каникулы в Чэнду: набор открыт",
+      description: "9 дней языка, культуры и путешествий для детей 8–16 лет — с заботой о каждом участнике.",
+      coverImage: "/assets/chengdu-family.webp",
+      authorName: "Бай Цзэ",
+      authorImage: "",
+      seoKeywords: "каникулы в Чэнду, языковой лагерь",
+      isPublished: true,
+      sortOrder: 20,
+      publishedAt: "2026-08-10",
+      updatedAt: "",
+      body: [],
+    },
+    {
+      id: "news-hsk-plan",
+      title: "HSK без стресса: план подготовки на 90 дней",
+      description: "Понятный маршрут от первых иероглифов до уверенной сдачи экзамена с практикой живой речи.",
+      coverImage: "/assets/hainan-language.webp",
+      authorName: "Бай Цзэ",
+      authorImage: "",
+      seoKeywords: "HSK, китайский язык, подготовка",
+      isPublished: true,
+      sortOrder: 30,
+      publishedAt: "2026-08-03",
+      updatedAt: "",
+      body: [],
+    },
+  ],
 };
 
 export function cloneCmsData(data = defaultCmsData) { return JSON.parse(JSON.stringify(data)); }
@@ -256,6 +303,12 @@ export function mergeCmsData(remote) {
   fallback.site = mergeValue(fallback.site, remote.site);
   fallback.page = mergeValue(fallback.page, remote.page);
   fallback.page.blocks = fallback.page.blocks.map((block) => remoteBlocks.has(block.id) ? mergeBlock(block, remoteBlocks.get(block.id)) : block);
+  // The API may return an empty posts table on an older installation. Keep
+  // the built-in publications in that case; once posts exist, use the saved
+  // CMS records and merge each record with its safe defaults.
+  if (Array.isArray(remote.posts) && remote.posts.length) {
+    fallback.posts = remote.posts.map((post, index) => mergeValue(fallback.posts[index] || {}, post));
+  }
   return fallback;
 }
 
