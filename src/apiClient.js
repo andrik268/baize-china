@@ -15,6 +15,7 @@ export async function saveRemoteCms(data) { const payload = await apiRequest("/a
 export async function loginRemote(login, password) { const payload = await apiRequest("/api/login", { method: "POST", headers: JSON_HEADERS, body: JSON.stringify({ login, password }) }); return payload.user; }
 export async function logoutRemote() { await apiRequest("/api/logout", { method: "POST" }); }
 export async function getRemoteSession() { const payload = await apiRequest("/api/me"); return payload.user || null; }
-export async function uploadRemoteImage(file) { const formData = new FormData(); formData.append("image", file); const payload = await apiRequest("/api/media", { method: "POST", body: formData }); return payload.path; }
+export async function uploadRemoteMedia(file) { const formData = new FormData(); formData.append("media", file); const payload = await apiRequest("/api/media", { method: "POST", body: formData }); return payload.path; }
+export const uploadRemoteImage = uploadRemoteMedia;
 export async function submitLead(data) { const payload = await apiRequest("/api/leads", { method: "POST", headers: JSON_HEADERS, body: JSON.stringify(data) }); return payload.lead; }
 export async function loadRemoteLeads() { const payload = await apiRequest("/api/leads"); return payload.leads || []; }

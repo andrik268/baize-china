@@ -20,11 +20,7 @@ import {
 } from "@phosphor-icons/react";
 import {
   quizSteps,
-  programDetails,
   recommendProgram,
-  yingkouGallery,
-  universitySteps,
-  visaSteps,
 } from "./data.js";
 import { loadRemoteCms, submitLead } from "./apiClient.js";
 import { defaultCmsData, getBlock, mergeCmsData } from "./cmsData.js";
@@ -37,44 +33,6 @@ const TELEGRAM_HREF = "https://t.me/chinainsummer";
 const MAX_HREF = "https://max.ru/u/f9LHodD0cOIIDx6pG5WILnOJudHFpeJU2O83YpgmMthMi0cPQNv2JWO20gM";
 const MAX_CHANNEL_HREF = "https://max.ru/join/_iffpxt8pk9Rf29rOX1swElr4iSKT22FMtNA6yUC_NE";
 const VK_HREF = "https://vk.ru/study.holidays";
-
-// Video stories supplied by the client. The last three files are testimonials;
-// the first five are shown in the cases section. Keeping the paths in the app
-// means they remain visible even when the remote CMS still has an older block
-// snapshot without media fields.
-const CASE_VIDEO_SOURCES = [
-  "/assets/videos/18335854955128.mp4",
-  "/assets/videos/8526131038840.mp4",
-  "/assets/videos/18216247233144.mp4",
-  "/assets/videos/18216256932472.mp4",
-  "/assets/videos/18216264469112.mp4",
-];
-
-const CASE_VIDEO_FALLBACKS = [
-  { title: "Поступление в вуз", text: "Реальная история поступления в китайский вуз." },
-  { title: "Каникулы в Китае", text: "Одно из любимых занятий на программе — фотосессия в национальных костюмах." },
-  { title: "Китайский язык", text: "«Дети все такие умные, хорошенькие...», — преподаватель китайского языка поделилась впечатлениями об участии в нашем летнем лагере." },
-  { title: "Поддержка на каждом шаге", text: "Куратор рядом до, во время и после поездки." },
-  { title: "Новый опыт в Китае", text: "Еще одна реальная история участника программы Бай Цзэ." },
-];
-
-const REVIEW_VIDEO_SOURCES = [
-  "/assets/videos/18216269384312.mp4",
-  "/assets/videos/18216273709688.mp4",
-  "/assets/videos/18216283802232.mp4",
-];
-
-const REVIEW_VIDEO_FALLBACKS = [
-  { title: "Отзыв участника", text: "Личная история о поездке и впечатлениях от программы." },
-  { title: "Отзыв семьи", text: "Что особенно понравилось родителям и студентам." },
-  { title: "Опыт обучения", text: "Реальный отзыв о поддержке и результатах программы." },
-];
-
-const CASE_CONTENT_OVERRIDES = [
-  CASE_VIDEO_FALLBACKS[0],
-  CASE_VIDEO_FALLBACKS[1],
-  CASE_VIDEO_FALLBACKS[2],
-];
 
 function blockContent(cms, id) {
   return getBlock(cms, id)?.content || getBlock(defaultCmsData, id).content;
@@ -138,13 +96,13 @@ function Brand({ light = false }) {
   return (
     <a className={`brand ${light ? "brand--light" : ""}`} href={brand.brandHref || "#top"}>
       <span className="brand__mark" aria-hidden="true">
-        <svg viewBox="0 0 48 48" role="presentation">
+        {brand.logo?.path ? <img src={brand.logo.path} alt="" /> : <svg viewBox="0 0 48 48" role="presentation">
           <circle cx="24" cy="24" r="19" fill="none" stroke="currentColor" strokeWidth="1.2" opacity=".24" />
           <path d="M9 31c3.9-9.8 10.4-15 19.2-15 4.2 0 7.9 1.2 10.8 3.5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
           <path d="M10.5 35.2c6.6-2.5 14.4-2.2 22.8 2.1" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" opacity=".78" />
           <circle cx="34.3" cy="11.6" r="3.2" fill="#e1b450" />
           <text x="24" y="30" textAnchor="middle" fill="currentColor" fontSize="9.2" fontWeight="800" letterSpacing=".4">白泽</text>
-        </svg>
+        </svg>}
       </span>
       <span className="brand__copy">
         <strong>{brand.brand}</strong>
@@ -316,14 +274,14 @@ function Programs({ openProgram }) {
           <p>{c.lead}</p>
         </div>
         <div className="program-grid">
-          {(c.programs || []).map((program, index) => (
+          {(c.programs || []).filter((program) => program.isActive !== false).map((program, index) => (
             <button
               className={`program-card program-card--${index + 1} reveal`}
               key={program.slug}
               onClick={() => openProgram(program)}
             >
               <img
-                src={program.slug === "yingkou-beijing" ? yingkouGallery[0].src : (program.cardImage?.path || program.cardImage)}
+                src={program.cardImage?.path || program.cardImage || program.image?.path || program.image}
                 alt={program.cardImage?.alt || program.title || ""}
                 loading="lazy"
               />
@@ -349,7 +307,7 @@ function Safety() {
       <div className="shell safety__grid">
         <div className="safety__media reveal">
           <img src={c.image?.path} alt={c.image?.alt || ""} loading="lazy" />
-          <div className="safety__badge"><ShieldCheck size={24} /> Группа под присмотром</div>
+          <div className="safety__badge"><ShieldCheck size={24} /> {c.badge || "Группа под присмотром"}</div>
         </div>
         <div className="safety__copy reveal">
           <h2>{c.title}</h2>
@@ -417,25 +375,28 @@ function Faq() {
 
 function Reviews() {
   const cms = useCms(); const c = blockContent(cms, "reviews");
-  const lead = c.lead?.startsWith("Мы добавим сюда реальные истории")
-    ? "Личные впечатления участников о поездках, обучении и поддержке Бай Цзэ."
-    : c.lead;
+  const items = (c.items || []).filter((item) => item.isActive !== false && item.video?.path);
   const [activeReview, setActiveReview] = useState(0);
-  const activeItem = REVIEW_VIDEO_FALLBACKS[activeReview];
-  const activeVideo = REVIEW_VIDEO_SOURCES[activeReview];
-  const moveReview = (offset) => setActiveReview((value) => (value + offset + REVIEW_VIDEO_SOURCES.length) % REVIEW_VIDEO_SOURCES.length);
+  const activeItem = items[activeReview] || items[0];
+  const moveReview = (offset) => setActiveReview((value) => (value + offset + items.length) % items.length);
+
+  useEffect(() => {
+    if (activeReview >= items.length) setActiveReview(0);
+  }, [activeReview, items.length]);
+
+  if (!activeItem) return null;
   return (
     <section className="section reviews" id="reviews" aria-labelledby="reviews-title">
       <div className="shell reviews__layout">
         <div className="reviews__lead reveal">
           <span className="reviews__mark"><ChatsCircle size={32} weight="duotone" /></span>
           <h2 id="reviews-title">{c.title}</h2>
-          <p>{lead}</p>
+          <p>{c.lead}</p>
         </div>
         <div className="reviews__videos reveal">
           <div className="reviews-slider" role="region" aria-roledescription="carousel" aria-label="Видео-отзывы">
             <article className="review-video-card">
-              <video className="review-video-card__video" controls preload="metadata" playsInline src={activeVideo} aria-label={activeItem.title} />
+              <video className="review-video-card__video" controls preload="metadata" playsInline src={activeItem.video.path} aria-label={activeItem.title} />
               <div className="review-video-card__body">
                 <strong>{activeItem.title}</strong>
                 <p>{activeItem.text}</p>
@@ -446,10 +407,10 @@ function Reviews() {
                 <ArrowLeft size={20} />
               </button>
               <div className="reviews-slider__dots" role="tablist" aria-label="Выбор отзыва">
-                {REVIEW_VIDEO_SOURCES.map((video, index) => (
+                {items.map((item, index) => (
                   <button
                     className={`reviews-slider__dot ${index === activeReview ? "reviews-slider__dot--active" : ""}`}
-                    key={video}
+                    key={item.video.path || index}
                     type="button"
                     role="tab"
                     aria-selected={index === activeReview}
@@ -458,7 +419,7 @@ function Reviews() {
                   />
                 ))}
               </div>
-              <span className="reviews-slider__count">{activeReview + 1} / {REVIEW_VIDEO_SOURCES.length}</span>
+              <span className="reviews-slider__count">{activeReview + 1} / {items.length}</span>
               <button className="reviews-slider__arrow" type="button" onClick={() => moveReview(1)} aria-label="Следующий отзыв">
                 <ArrowRight size={20} />
               </button>
@@ -472,13 +433,7 @@ function Reviews() {
 
 function Cases() {
   const cms = useCms(); const c = blockContent(cms, "cases"); const icons = [GraduationCap, GlobeHemisphereEast, Translate];
-  const cmsItems = c.items || [];
-  const items = CASE_VIDEO_SOURCES.map((video, index) => ({
-    ...CASE_VIDEO_FALLBACKS[index],
-    ...cmsItems[index],
-    ...CASE_CONTENT_OVERRIDES[index],
-    video,
-  }));
+  const items = (c.items || []).filter((item) => item.isActive !== false);
   return (
     <section className="section cases" id="cases" aria-labelledby="cases-title">
       <div className="shell">
@@ -491,8 +446,8 @@ function Cases() {
               const Icon = icons[index % icons.length];
               return (
               <article className="case-card reveal" key={title}>
-              {video ? (
-                <video className="case-card__video" controls preload="metadata" playsInline src={video} aria-label={title} />
+              {video?.path ? (
+                <video className="case-card__video" controls preload="metadata" playsInline src={video.path} aria-label={title} />
               ) : (
                 <img className="case-card__image" src={image?.path || image} alt={image?.alt || ""} loading="lazy" />
               )}
@@ -523,14 +478,14 @@ function DetailSection({ id, icon: Icon, title, intro, description, steps, inclu
         </div>
         <div className="detail__panel reveal">
           {image && <img className="detail__image" src={image} alt="" loading="lazy" />}
-          <h3>Как мы работаем</h3>
+          <h3>{c.panelTitle || "Как мы работаем"}</h3>
           <ol className="step-list">
             {steps.map(([name, text]) => (
               <li key={name}><span><Check size={16} weight="bold" /></span><div><strong>{name}</strong><p>{text}</p></div></li>
             ))}
           </ol>
           <details>
-            <summary>Что входит в услугу <ArrowRight size={18} /></summary>
+            <summary>{c.includedTitle || "Что входит в услугу"} <ArrowRight size={18} /></summary>
             <ul className="included-list">
               {included.map((item) => <li key={item}><Check size={16} />{item}</li>)}
             </ul>
@@ -580,9 +535,9 @@ function QuizBanner({ openQuiz }) {
           <p>{c.lead}</p>
         </div>
         <div className="quiz-banner__action">
-          <div><Clock size={20} /> 1 минута</div>
+          <div><Clock size={20} /> {c.minuteText || "1 минута"}</div>
           <button className="button button--terracotta" onClick={openQuiz}>{c.button} <ArrowRight size={18} /></button>
-          <small>Ваши данные защищены</small>
+          <small>{c.privacyText || "Ваши данные защищены"}</small>
         </div>
       </div>
     </section>
@@ -635,9 +590,9 @@ function Footer({ setLegal }) {
     <footer className="footer">
       <div className="shell footer__grid">
         <div><Brand light /><p>{c.text}</p></div>
-        <div><h3>Направления</h3>{footerLinks.map((link) => <a href={link.href || "#top"} key={`${link.label}-${link.href}`}>{link.label}</a>)}</div>
-        <div><h3>Связаться</h3>{socials.map((social) => <a className="footer__social-link" href={social.href} target="_blank" rel="noreferrer" key={social.label}><SocialIcon name={social.icon} size={18} />{social.label}</a>)}</div>
-        <div><h3>Документы</h3><button onClick={() => setLegal("privacy")}>Политика ПДн</button><button onClick={() => setLegal("offer")}>Публичная оферта</button><p>{c.legalName}<br />{c.inn}</p></div>
+        <div><h3>{c.directionsTitle || "Направления"}</h3>{footerLinks.map((link) => <a href={link.href || "#top"} key={`${link.label}-${link.href}`}>{link.label}</a>)}</div>
+        <div><h3>{c.contactsTitle || "Связаться"}</h3>{socials.map((social) => <a className="footer__social-link" href={social.href} target="_blank" rel="noreferrer" key={social.label}><SocialIcon name={social.icon} size={18} />{social.label}</a>)}</div>
+        <div><h3>{c.documentsTitle || "Документы"}</h3><button onClick={() => setLegal("privacy")}>{c.privacyLabel || "Политика ПДн"}</button><button onClick={() => setLegal("offer")}>{c.offerLabel || "Публичная оферта"}</button><p>{c.legalName}<br />{c.inn}</p></div>
       </div>
       <div className="shell footer__bottom"><span>{c.copyright}</span><span>{c.address}</span></div>
     </footer>
@@ -666,13 +621,14 @@ function Modal({ children, onClose, className = "" }) {
 }
 
 function LeadForm({ title, onClose, defaultGoal = "" }) {
+  const cms = useCms(); const c = blockContent(cms, "forms");
   const [state, setState] = useState("idle");
   const [error, setError] = useState("");
   const submit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     if (!data.get("name") || String(data.get("phone")).replace(/\D/g, "").length < 10 || !data.get("consent")) {
-      setError("Заполните имя, телефон и подтвердите согласие на обработку данных.");
+      setError(c.validationError || "Заполните имя, телефон и подтвердите согласие на обработку данных.");
       return;
     }
     setError("");
@@ -682,30 +638,30 @@ function LeadForm({ title, onClose, defaultGoal = "" }) {
   };
 
   if (state === "success") {
-    return <div className="form-success"><Check size={36} weight="bold" /><h2>Спасибо!</h2><p>Заявка подготовлена. Менеджер свяжется с вами в рабочее время.</p><button className="button" onClick={onClose}>Готово</button></div>;
+    return <div className="form-success"><Check size={36} weight="bold" /><h2>{c.successTitle || "Спасибо!"}</h2><p>{c.successText || "Заявка подготовлена. Менеджер свяжется с вами в рабочее время."}</p><button className="button" onClick={onClose}>{c.successButton || "Готово"}</button></div>;
   }
 
   return (
     <form className="lead-form" onSubmit={submit} noValidate>
       <h2>{title}</h2>
-      <p>Оставьте контакты. Первая консультация бесплатна.</p>
-      <label>Ваше имя<input name="name" autoComplete="name" /></label>
-      <label>Телефон<input name="phone" inputMode="tel" autoComplete="tel" placeholder="+7 999 000-00-00" /></label>
-      <label>Направление<select name="goal" defaultValue={defaultGoal}><option value="">Выберите направление</option><option>Каникулы в Китае</option><option>Поступление в вуз</option><option>Визовое сопровождение</option><option>Китайский язык</option></select></label>
-      <label className="checkbox"><input type="checkbox" name="consent" /><span>Согласен с политикой обработки персональных данных</span></label>
+      <p>{c.leadIntro || "Оставьте контакты. Первая консультация бесплатна."}</p>
+      <label>{c.nameLabel || "Ваше имя"}<input name="name" autoComplete="name" /></label>
+      <label>{c.phoneLabel || "Телефон"}<input name="phone" inputMode="tel" autoComplete="tel" placeholder="+7 999 000-00-00" /></label>
+      <label>{c.goalLabel || "Направление"}<select name="goal" defaultValue={defaultGoal}><option value="">{c.goalPlaceholder || "Выберите направление"}</option><option>Каникулы в Китае</option><option>Поступление в вуз</option><option>Визовое сопровождение</option><option>Китайский язык</option></select></label>
+      <label className="checkbox"><input type="checkbox" name="consent" /><span>{c.consentLabel || "Согласен с политикой обработки персональных данных"}</span></label>
       {error && <p className="form-error" role="alert">{error}</p>}
-      <button className="button button--wide" disabled={state === "loading"}>{state === "loading" ? "Отправляем..." : "Отправить заявку"}</button>
+      <button className="button button--wide" disabled={state === "loading"}>{state === "loading" ? (c.loadingLabel || "Отправляем...") : (c.submitLabel || "Отправить заявку")}</button>
     </form>
   );
 }
 
 function ProgramModal({ program, onClose, openForm }) {
   const [slide, setSlide] = useState(0);
-  const gallery = program.slug === "yingkou-beijing"
-    ? (program.gallery?.length ? program.gallery : yingkouGallery)
-    : [{ src: program.image?.path || program.image, alt: program.title }];
+  const gallery = program.gallery?.length
+    ? program.gallery
+    : [{ path: program.image?.path || program.image, alt: program.title }];
   const currentSlide = gallery[slide] || gallery[0];
-  const details = program.details?.length ? program.details : programDetails[program.slug] || [];
+  const details = program.details || [];
   const moveSlide = (direction) => setSlide((value) => (value + direction + gallery.length) % gallery.length);
 
   return (
@@ -751,29 +707,32 @@ function ProgramModal({ program, onClose, openForm }) {
 }
 
 function QuizModal({ onClose }) {
+  const cms = useCms(); const c = blockContent(cms, "quiz");
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
-  const recommendation = useMemo(() => recommendProgram(answers), [answers]);
-  const current = quizSteps[step];
+  const steps = c.steps || quizSteps;
+  const programs = useMemo(() => blockContent(cms, "programs").programs || [], [cms]);
+  const recommendation = useMemo(() => recommendProgram(answers, programs), [answers, programs]);
+  const current = steps[step];
   const choose = (option) => {
     setAnswers((value) => ({ ...value, [current.id]: option }));
-    if (step < quizSteps.length - 1) window.setTimeout(() => setStep((value) => value + 1), 130);
+    if (step < steps.length - 1) window.setTimeout(() => setStep((value) => value + 1), 130);
   };
 
   if (submitted) {
     return (
       <Modal onClose={onClose} className="quiz-modal">
-        <div className="quiz-result"><Check size={38} weight="bold" /><h2>Подборка формируется</h2><p>Менеджер напишет вам в рабочее время и пришлёт варианты с актуальными датами и стоимостью.</p><button className="button" onClick={onClose}>Готово</button></div>
+        <div className="quiz-result"><Check size={38} weight="bold" /><h2>{c.resultTitle || "Подборка формируется"}</h2><p>{c.resultText || "Менеджер напишет вам в рабочее время и пришлёт варианты с актуальными датами и стоимостью."}</p><button className="button" onClick={onClose}>{c.resultButton || "Готово"}</button></div>
       </Modal>
     );
   }
 
   return (
     <Modal onClose={onClose} className="quiz-modal">
-      {step < quizSteps.length ? (
+      {step < steps.length ? (
         <>
-          <div className="quiz__progress"><span>Вопрос {step + 1} из {quizSteps.length}</span><div><i style={{ width: `${((step + 1) / quizSteps.length) * 100}%` }} /></div></div>
+          <div className="quiz__progress"><span>Вопрос {step + 1} из {steps.length}</span><div><i style={{ width: `${((step + 1) / steps.length) * 100}%` }} /></div></div>
           <h2>{current.title}</h2>
           <div className="quiz__options">
             {current.options.map((option) => <button className={answers[current.id] === option ? "is-selected" : ""} key={option} onClick={() => choose(option)}>{option}<ArrowRight size={18} /></button>)}
@@ -781,14 +740,14 @@ function QuizModal({ onClose }) {
           <button className="quiz__back" disabled={step === 0} onClick={() => setStep((value) => value - 1)}><ArrowLeft size={18} />Назад</button>
         </>
       ) : null}
-      {step === quizSteps.length - 1 && answers[current.id] && (
+      {step === steps.length - 1 && answers[current.id] && (
         <div className="quiz-final">
-          <div className="quiz-final__recommend"><small>Рекомендуем начать с</small><strong>{recommendation.title}</strong><span>{recommendation.description}</span></div>
+          <div className="quiz-final__recommend"><small>Рекомендуем начать с</small><strong>{recommendation?.title || "персональной консультации"}</strong><span>{recommendation?.description || "Мы подберём программу после короткой консультации."}</span></div>
           <form onSubmit={(event) => { event.preventDefault(); const data = new FormData(event.currentTarget); submitLead({ name: data.get("name"), phone: data.get("phone"), message: "Персональный подбор программы", source: "quiz", fields: answers }).catch(() => null).finally(() => setSubmitted(true)); }}>
-            <label>Ваше имя<input required name="name" autoComplete="name" /></label>
-            <label>Телефон<input required name="phone" autoComplete="tel" inputMode="tel" /></label>
-            <label className="checkbox"><input required type="checkbox" /><span>Согласен на обработку персональных данных</span></label>
-            <button className="button button--wide">Получить подбор программ</button>
+            <label>{c.nameLabel || "Ваше имя"}<input required name="name" autoComplete="name" /></label>
+            <label>{c.phoneLabel || "Телефон"}<input required name="phone" autoComplete="tel" inputMode="tel" /></label>
+            <label className="checkbox"><input required type="checkbox" /><span>{c.consentLabel || "Согласен на обработку персональных данных"}</span></label>
+            <button className="button button--wide">{c.submitLabel || "Получить подбор программ"}</button>
           </form>
         </div>
       )}
@@ -797,30 +756,15 @@ function QuizModal({ onClose }) {
 }
 
 function LegalModal({ type, onClose }) {
+  const cms = useCms(); const c = blockContent(cms, "legal");
   const privacy = type === "privacy";
+  const sections = privacy ? c.privacySections || [] : c.offerSections || [];
   return (
     <Modal onClose={onClose} className="legal-modal">
       <article>
-        <p className="legal__notice">Редакция от 12 августа 2026 года. Черновик для юридической проверки.</p>
-        <h2>{privacy ? "Политика обработки персональных данных" : "Публичная оферта"}</h2>
-        {privacy ? (
-          <>
-            <h3>1. Оператор и общие положения</h3><p>Оператор: ИП Лазаренко Наталья Леонидовна, ИНН 231009681142, бренд «Бай Цзэ». Контакт для обращений: china@baize.ru. Политика применяется к данным, полученным через формы сайта, телефон, электронную почту и мессенджеры.</p>
-            <h3>2. Какие данные обрабатываются</h3><p>Имя, номер телефона, адрес электронной почты, выбранное направление, ответы квиза, источник обращения и технические данные, необходимые для работы сайта. Данные о здоровье, документах и несовершеннолетних не должны передаваться через общую форму.</p>
-            <h3>3. Цели и основания</h3><p>Ответ на обращение, подбор программы, подготовка консультации, исполнение договора и выполнение требований закона. Обработка на основании согласия прекращается после его отзыва, если иное хранение не требуется законом или договором.</p>
-            <h3>4. Передача и хранение</h3><p>Данные могут передаваться подрядчикам по CRM, хостингу и связи только в необходимом объёме и при наличии договорных мер защиты. До подключения этих систем их точный перечень и сроки хранения необходимо утвердить.</p>
-            <h3>5. Права пользователя</h3><p>Пользователь вправе запросить сведения об обработке, уточнение, блокирование или удаление данных, а также отозвать согласие, направив письмо оператору.</p>
-          </>
-        ) : (
-          <>
-            <h3>1. Статус документа</h3><p>Эта страница содержит предварительные условия оказания консультационных и сопроводительных услуг. Конкретная программа, цена, сроки, состав услуг и правила возврата фиксируются в индивидуальном договоре или счёте до оплаты.</p>
-            <h3>2. Исполнитель</h3><p>ИП Лазаренко Наталья Леонидовна, ИНН 231009681142, бренд «Бай Цзэ», Краснодар, ул. Красная 160, офис 307.</p>
-            <h3>3. Предмет</h3><p>Исполнитель оказывает услуги по подбору зарубежных образовательных и каникулярных программ, информационному, документальному и визовому сопровождению в согласованном объёме.</p>
-            <h3>4. Цена и заключение договора</h3><p>Размещение заявки не создаёт обязанности по оплате. Договор считается заключённым после согласования существенных условий и совершения заказчиком предусмотренного платежа.</p>
-            <h3>5. Ответственность</h3><p>Исполнитель отвечает за собственные обязательства в согласованном объёме. Решения вузов, консульств, перевозчиков и принимающих организаций находятся вне прямого контроля исполнителя, если иное прямо не зафиксировано договором.</p>
-            <h3>6. Возвраты и споры</h3><p>Условия отказа, возврата и расчёта фактически понесённых расходов определяются индивидуальным договором и применимым законодательством РФ.</p>
-          </>
-        )}
+        <p className="legal__notice">{c.notice}</p>
+        <h2>{privacy ? c.privacyTitle : c.offerTitle}</h2>
+        {sections.map((section) => <div key={section.title}><h3>{section.title}</h3><p>{section.text}</p></div>)}
       </article>
     </Modal>
   );
@@ -860,23 +804,13 @@ export default function App() {
         <Universities />
         <DetailSection
           id="university" icon={GraduationCap}
-          title="Китай: образовательный хаб XXI века"
-          intro="Подготовим к HSK, подберём университет, поможем получить грант и студенческую визу."
-          description="Вам не нужно искать университет на китайском сайте и разбираться в требованиях в одиночку. Мы берём процесс поступления на себя."
-          steps={universitySteps}
-          included={["Персональный куратор", "Подача в 3-5 университетов", "Подготовка документов", "Помощь с грантом", "Студенческая виза", "Встреча и адаптация"]}
-          button="Записаться на консультацию" openForm={(title) => setForm({ title, goal: "Поступление в вуз" })}
+          openForm={(title) => setForm({ title, goal: "Поступление в вуз" })}
         />
         <About openConsultation={() => setForm({ title: "Бесплатная консультация", goal: "" })} />
         <Faq />
         <DetailSection
           id="visa" icon={BookOpenText} reverse
-          title="Пока вы собираете чемоданы, мы открываем визу"
-          intro="Полное визовое сопровождение для детей и взрослых: от анкеты до паспорта с визой."
-          description="Оформляем учебные краткосрочные и долгосрочные визы, а также деловые визы для поездок и стажировок."
-          steps={visaSteps}
-          included={["Проверка документов", "Заполнение анкеты", "Медицинская страховка", "Запись в визовый центр", "Контроль сроков", "Передача паспорта"]}
-          button="Консультация по визе" image="/assets/airport-support.webp" openForm={(title) => setForm({ title, goal: "Визовое сопровождение" })}
+          openForm={(title) => setForm({ title, goal: "Визовое сопровождение" })}
         />
         <Programs openProgram={setProgram} />
         <Safety />

@@ -157,20 +157,20 @@ export const quizSteps = [
   },
 ];
 
-export function recommendProgram(answers) {
+export function recommendProgram(answers, availablePrograms = programs) {
   const who = answers.who || "";
   const goal = answers.goal || "";
   const when = answers.when || "";
 
-  if (who.includes("семьёй")) return programs.find((item) => item.slug === "hainan");
-  if (goal.includes("Технологии")) return programs.find((item) => item.slug === "shenzhen");
+  if (who.includes("семьёй")) return availablePrograms.find((item) => item.slug === "hainan");
+  if (goal.includes("Технологии")) return availablePrograms.find((item) => item.slug === "shenzhen");
   if (goal.includes("Поступление") || who.includes("16+")) {
-    return programs.find((item) => item.slug === "harbin");
+    return availablePrograms.find((item) => item.slug === "harbin");
   }
   if (goal.includes("культуру") || when.includes("Осенние") || when.includes("Весенние")) {
-    return programs.find((item) => item.slug === "chengdu");
+    return availablePrograms.find((item) => item.slug === "chengdu");
   }
-  return programs.find((item) => item.slug === "yingkou-beijing");
+  return availablePrograms.find((item) => item.slug === "yingkou-beijing") || availablePrograms[0];
 }
 
 export const universitySteps = [

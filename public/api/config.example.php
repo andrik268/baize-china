@@ -25,11 +25,16 @@ return [
         ],
     ],
     'uploads' => [
-        'max_size' => 5 * 1024 * 1024,
+        'max_size' => 100 * 1024 * 1024,
         'allowed_types' => [
             'image/jpeg' => 'jpg',
             'image/png' => 'png',
             'image/webp' => 'webp',
+            'image/gif' => 'gif',
+            'image/svg+xml' => 'svg',
+            'video/mp4' => 'mp4',
+            'video/webm' => 'webm',
+            'video/quicktime' => 'mov',
         ],
     ],
 ];

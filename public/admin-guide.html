@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Пособие по админке - Бай Цзэ</title>
+    <style>
+      :root { --ink:#1f2d3a; --muted:#64778c; --blue:#164f8e; --terra:#bd543d; --line:#dce5ee; --paper:#fff; --bg:#f4f8fc; }
+      * { box-sizing:border-box; }
+      body { margin:0; background:var(--bg); color:var(--ink); font-family:Inter, Arial, sans-serif; line-height:1.55; }
+      main { width:min(860px, calc(100% - 32px)); margin:42px auto 72px; }
+      .hero { padding:42px; color:#fff; border-radius:28px; background:linear-gradient(135deg,#10447e,#286eb2); box-shadow:0 22px 55px rgba(22,79,142,.2); }
+      .hero span { display:inline-flex; align-items:center; justify-content:center; width:48px; height:48px; margin-bottom:16px; border-radius:15px; background:rgba(255,255,255,.16); font-size:22px; }
+      h1,h2,h3 { margin:0 0 12px; line-height:1.12; }
+      h1 { font-size:clamp(32px,5vw,52px); }
+      h2 { color:var(--blue); font-size:28px; margin-top:34px; }
+      h3 { font-size:18px; }
+      p { margin:0 0 14px; }
+      .hero p { max-width:620px; margin:0; color:#dcecff; font-size:18px; }
+      .card { padding:28px; margin-top:22px; border:1px solid var(--line); border-radius:22px; background:var(--paper); box-shadow:0 12px 35px rgba(38,74,110,.06); }
+      .step { display:grid; grid-template-columns:34px 1fr; gap:14px; align-items:start; margin:20px 0; }
+      .number { display:grid; place-items:center; width:32px; height:32px; border-radius:50%; color:#fff; background:var(--terra); font-weight:800; }
+      ul { padding-left:22px; margin:10px 0; }
+      li { margin:7px 0; }
+      .tip { margin-top:20px; padding:16px 18px; border-left:4px solid var(--terra); border-radius:0 12px 12px 0; background:#fff4f0; }
+      .table { overflow:auto; }
+      table { width:100%; border-collapse:collapse; font-size:15px; }
+      th,td { padding:12px; vertical-align:top; border-bottom:1px solid var(--line); text-align:left; }
+      th { color:var(--blue); }
+      .back { display:inline-block; margin-top:28px; color:var(--blue); font-weight:700; text-decoration:none; }
+      code { padding:2px 5px; border-radius:5px; background:#edf3f9; color:#164f8e; }
+      @media (max-width:600px) { main { width:min(100% - 24px,860px); margin-top:12px; } .hero,.card { padding:24px; border-radius:18px; } }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <span>白泽</span>
+        <h1>Как пользоваться админкой</h1>
+        <p>Короткое и понятное пособие по обновлению сайта «Бай Цзэ». Код, программы для верстки и помощь разработчика не нужны.</p>
+      </section>
+
+      <section class="card">
+        <h2>Главное правило</h2>
+        <p>В админке можно менять всё, что видит посетитель: заголовки, обычные тексты, кнопки, телефоны, ссылки, фотографии, видео, программы, слайды, отзывы и кейсы.</p>
+        <p>После каждой серии изменений нажимайте кнопку <strong>«Сохранить изменения»</strong> справа вверху. Только после этого изменения появятся на сайте.</p>
+        <div class="tip"><strong>Совет:</strong> сначала измените один элемент, сохраните его и посмотрите результат через кнопку «Открыть сайт». Так вы быстро привыкнете к редактору.</div>
+      </section>
+
+      <section class="card">
+        <h2>Как войти</h2>
+        <div class="step"><span class="number">1</span><div><strong>Откройте страницу <code>/admin</code></strong><br />Например: <code>https://china-baize.ru/admin</code>.</div></div>
+        <div class="step"><span class="number">2</span><div><strong>Введите логин и пароль администратора.</strong><br />Если пароль потерялся, обратитесь к человеку, который передал вам сайт.</div></div>
+        <div class="step"><span class="number">3</span><div><strong>Сразу откроется раздел «Заявки».</strong><br />Здесь видны новые обращения от посетителей сайта.</div></div>
+      </section>
+
+      <section class="card">
+        <h2>Как устроено меню</h2>
+        <p>Слева находятся разделы сайта в том же порядке, в котором они идут на странице. Поэтому нужное место легко найти по названию: «Первый экран», «Каникулы», «Отзывы», «Контакты» и так далее.</p>
+        <div class="table"><table><thead><tr><th>Раздел</th><th>Что в нём меняется</th></tr></thead><tbody>
+          <tr><td>Заявки</td><td>Новые обращения с сайта. Свежие заявки находятся вверху.</td></tr>
+          <tr><td>Шапка и логотип</td><td>Логотип, название, меню, телефон и кнопка вверху сайта.</td></tr>
+          <tr><td>Первый экран</td><td>Главный заголовок, текст, кнопки и большая фотография.</td></tr>
+          <tr><td>Каникулы</td><td>Все программы, карточки, фотографии, галереи и тексты во всплывающем окне программы.</td></tr>
+          <tr><td>Отзывы</td><td>Видео-слайды отзывов, их заголовки и подписи.</td></tr>
+          <tr><td>Кейсы</td><td>Карточки с фото или видео, названия и описания.</td></tr>
+          <tr><td>Контакты</td><td>Адрес, телефоны, карта, WhatsApp, Telegram, MAX, VK и другие ссылки.</td></tr>
+          <tr><td>Тексты форм</td><td>Названия полей, сообщения об ошибках и текст после отправки заявки.</td></tr>
+          <tr><td>Документы</td><td>Политика обработки данных и публичная оферта.</td></tr>
+        </tbody></table></div>
+      </section>
+
+      <section class="card">
+        <h2>Как заменить текст или ссылку</h2>
+        <div class="step"><span class="number">1</span><div>Выберите нужный раздел слева.</div></div>
+        <div class="step"><span class="number">2</span><div>Откройте нужную группу, например «Текст и кнопки» или «Контакты».</div></div>
+        <div class="step"><span class="number">3</span><div>Найдите поле с понятной подписью: «Заголовок», «Текст кнопки», «Ссылка», «Телефон».</div></div>
+        <div class="step"><span class="number">4</span><div>Внесите правку и нажмите «Сохранить изменения».</div></div>
+        <div class="tip"><strong>Ссылки:</strong> вставляйте их целиком, начиная с <code>https://</code>. Для внутреннего перехода по странице можно использовать вид <code>#contacts</code>.</div>
+      </section>
+
+      <section class="card">
+        <h2>Как заменить фото или видео</h2>
+        <p>Под каждым изображением и видео есть предварительный просмотр, кнопка замены и поле со ссылкой.</p>
+        <div class="step"><span class="number">1</span><div>Нажмите «Заменить изображение» или «Заменить видео».</div></div>
+        <div class="step"><span class="number">2</span><div>Выберите файл на компьютере и дождитесь окончания загрузки.</div></div>
+        <div class="step"><span class="number">3</span><div>Проверьте предварительный просмотр. Для изображения при необходимости заполните его краткое описание.</div></div>
+        <div class="step"><span class="number">4</span><div>Нажмите «Сохранить изменения».</div></div>
+        <p><strong>Подходящие файлы:</strong> для фото - JPG, PNG, WebP, GIF, SVG; для видео - MP4, WebM или MOV. Размер одного файла - до 100 МБ.</p>
+        <div class="tip"><strong>Если медиа уже размещено в интернете:</strong> можно не загружать файл, а вставить готовую прямую ссылку в поле «Ссылка на файл».</div>
+      </section>
+
+      <section class="card">
+        <h2>Как работать со слайдерами и карточками</h2>
+        <p>В разделах «Каникулы», «Отзывы» и «Кейсы» все элементы собраны в списки. Откройте карточку по её названию.</p>
+        <ul>
+          <li><strong>Добавить</strong> - создаёт новую пустую карточку или слайд.</li>
+          <li><strong>Выше / Ниже</strong> - меняет порядок показа на сайте.</li>
+          <li><strong>Показывать на сайте</strong> - временно скрывает элемент без удаления.</li>
+          <li><strong>Удалить</strong> - убирает элемент. После сохранения он исчезнет с сайта.</li>
+        </ul>
+        <p>Для программы каникул в одной карточке доступны обложка, фото в галерее, подробное описание и все подписи. Для отзыва или кейса - видео, фото, название и текст.</p>
+      </section>
+
+      <section class="card">
+        <h2>Как проверять результат</h2>
+        <p>Нажмите «Открыть сайт» внизу левого меню. Сайт откроется в новой вкладке. Если вы только что сохранили изменения, обновите страницу сайта один раз.</p>
+        <p>Если что-то получилось не так, вернитесь в тот же раздел, исправьте поле и снова нажмите «Сохранить изменения».</p>
+      </section>
+
+      <section class="card">
+        <h2>Что не стоит делать</h2>
+        <ul>
+          <li>Не удаляйте программу или отзыв, если хотите убрать их только на время - используйте переключатель «Показывать на сайте».</li>
+          <li>Не вставляйте ссылку на страницу просмотра облака вместо ссылки на сам файл.</li>
+          <li>Не закрывайте вкладку во время загрузки большого видео.</li>
+          <li>Не забывайте нажимать «Сохранить изменения» после правок.</li>
+        </ul>
+      </section>
+
+      <a class="back" href="/admin">← Вернуться в админку</a>
+    </main>
+  </body>
+</html>

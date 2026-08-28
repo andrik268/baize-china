@@ -4,16 +4,25 @@ export const ADMIN_LOGIN = "admin@site.local";
 export const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 export const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/svg+xml"];
 
-import { programs, quizSteps, faqGroups, universitySteps, universityGroups, visaSteps } from "./data.js";
+import { programs, quizSteps, faqGroups, universitySteps, universityGroups, visaSteps, yingkouGallery } from "./data.js";
 
-const image = (path, alt = "") => ({ path, alt });
-const mapProgram = (program) => ({ ...program, image: image(program.image, program.title), cardImage: image(program.cardImage, program.title) });
+const image = (path, alt = "") => ({ kind: "image", path, alt });
+const video = (path, label = "") => ({ kind: "video", path, label });
+const mediaGallery = (items) => items.map((item) => image(item.src || item.path, item.alt || ""));
+const mapProgram = (program) => ({
+  ...program,
+  image: image(program.image, program.title),
+  cardImage: image(program.cardImage, program.title),
+  gallery: mediaGallery(program.gallery || (program.slug === "yingkou-beijing" ? yingkouGallery : [{ src: program.image, alt: program.title }])),
+  details: program.details || [],
+  isActive: true,
+});
 
 const defaultBlocks = [
   {
     id: "header", type: "header", title: "Шапка сайта", isActive: true,
     content: {
-      brand: "Бай Цзэ", tagline: "Учеба и каникулы в Китае", phone: "+7 (903) 450-54-43", phoneHref: "tel:+79034505443", brandHref: "#top",
+      brand: "Бай Цзэ", tagline: "Учеба и каникулы в Китае", phone: "+7 (903) 450-54-43", phoneHref: "tel:+79034505443", brandHref: "#top", logo: image("", "Логотип Бай Цзэ"),
       navigation: ["Университеты", "Визы", "Каникулы", "Сопровождение", "Курсы", "О нас"], navigationHrefs: { "Университеты": "#universities", "Визы": "#visa", "Каникулы": "#programs", "Сопровождение": "#safety", "Курсы": "#language", "О нас": "#about" }, buttonText: "Подобрать программу",
     },
   },
@@ -60,7 +69,7 @@ const defaultBlocks = [
   },
   {
     id: "university", type: "detail", title: "Поступление в вуз", isActive: true,
-    content: { title: "Китай: образовательный хаб XXI века", intro: "Подготовим к HSK, подберём университет, поможем получить грант и студенческую визу.", description: "Вам не нужно искать университет на китайском сайте и разбираться в требованиях в одиночку. Мы берём процесс поступления на себя.", button: "Записаться на консультацию", image: image("/assets/hero-campus.webp", "Кампус китайского университета"), steps: universitySteps, included: ["Персональный куратор", "Подача в 3-5 университетов", "Подготовка документов", "Помощь с грантом", "Студенческая виза", "Встреча и адаптация"] },
+    content: { title: "Китай: образовательный хаб XXI века", intro: "Подготовим к HSK, подберём университет, поможем получить грант и студенческую визу.", description: "Вам не нужно искать университет на китайском сайте и разбираться в требованиях в одиночку. Мы берём процесс поступления на себя.", button: "Записаться на консультацию", image: image("/assets/hero-campus.webp", "Кампус китайского университета"), panelTitle: "Как мы работаем", includedTitle: "Что входит в услугу", steps: universitySteps, included: ["Персональный куратор", "Подача в 3-5 университетов", "Подготовка документов", "Помощь с грантом", "Студенческая виза", "Встреча и адаптация"] },
   },
   {
     id: "about", type: "about", title: "О компании", isActive: true,
@@ -72,7 +81,7 @@ const defaultBlocks = [
   },
   {
     id: "visa", type: "detail", title: "Визы", isActive: true,
-    content: { title: "Пока вы собираете чемоданы, мы открываем визу", intro: "Полное визовое сопровождение для детей и взрослых: от анкеты до паспорта с визой.", description: "Оформляем учебные краткосрочные и долгосрочные визы, а также деловые визы для поездок и стажировок.", button: "Консультация по визе", image: image("/assets/airport-support.webp", "Куратор сопровождает подростков в аэропорту"), steps: visaSteps, included: ["Проверка документов", "Заполнение анкеты", "Медицинская страховка", "Запись в визовый центр", "Контроль сроков", "Передача паспорта"] },
+    content: { title: "Пока вы собираете чемоданы, мы открываем визу", intro: "Полное визовое сопровождение для детей и взрослых: от анкеты до паспорта с визой.", description: "Оформляем учебные краткосрочные и долгосрочные визы, а также деловые визы для поездок и стажировок.", button: "Консультация по визе", image: image("/assets/airport-support.webp", "Куратор сопровождает подростков в аэропорту"), panelTitle: "Как мы работаем", includedTitle: "Что входит в услугу", steps: visaSteps, included: ["Проверка документов", "Заполнение анкеты", "Медицинская страховка", "Запись в визовый центр", "Контроль сроков", "Передача паспорта"] },
   },
   {
     id: "programs", type: "programs", title: "Каникулы", isActive: true,
@@ -80,7 +89,7 @@ const defaultBlocks = [
   },
   {
     id: "safety", type: "safety", title: "Сопровождение", isActive: true,
-    content: { title: "Мы летим вместе с вами", text: "Вам не придётся переживать за ребёнка в аэропорту или чужой стране. Кураторы сопровождают группу от вылета из Краснодара или Москвы до возвращения домой.", image: image("/assets/airport-support.webp", "Куратор сопровождает подростков в аэропорту"), points: ["Встреча и проводы", "24/7 связь с родителями", "Медицинская страховка", "Проверенное питание"], linkText: "Задать вопрос о безопасности", linkHref: "#contacts" },
+    content: { title: "Мы летим вместе с вами", text: "Вам не придётся переживать за ребёнка в аэропорту или чужой стране. Кураторы сопровождают группу от вылета из Краснодара или Москвы до возвращения домой.", image: image("/assets/airport-support.webp", "Куратор сопровождает подростков в аэропорту"), badge: "Группа под присмотром", points: ["Встреча и проводы", "24/7 связь с родителями", "Медицинская страховка", "Проверенное питание"], linkText: "Задать вопрос о безопасности", linkHref: "#contacts" },
   },
   {
     id: "language", type: "language", title: "Курсы", isActive: true,
@@ -88,15 +97,31 @@ const defaultBlocks = [
   },
   {
     id: "reviews", type: "reviews", title: "Отзывы", isActive: true,
-    content: { title: "Отзывы", lead: "Личные впечатления участников о поездках, обучении и поддержке Бай Цзэ.", emptyTitle: "Ваш отзыв может быть здесь", emptyText: "Расскажите, какой маршрут вы рассматриваете. Мы покажем подходящие истории родителей и студентов.", button: "", linkText: "Смотреть новости во ВКонтакте" },
+    content: {
+      title: "Отзывы", lead: "Личные впечатления участников о поездках, обучении и поддержке Бай Цзэ.",
+      items: [
+        { title: "Отзыв участника", text: "Личная история о поездке и впечатлениях от программы.", video: video("/assets/videos/18216269384312.mp4", "Видео-отзыв участника"), isActive: true },
+        { title: "Отзыв семьи", text: "Что особенно понравилось родителям и студентам.", video: video("/assets/videos/18216273709688.mp4", "Видео-отзыв семьи"), isActive: true },
+        { title: "Опыт обучения", text: "Реальный отзыв о поддержке и результатах программы.", video: video("/assets/videos/18216283802232.mp4", "Видео об опыте обучения"), isActive: true },
+      ],
+    },
   },
   {
     id: "cases", type: "cases", title: "Кейсы", isActive: true,
-    content: { title: "Кейсы", lead: "Добавим сюда реальные скриншоты, видео и истории семей после согласования публикации.", items: [{ title: "Поступление в вуз", text: "Здесь разместим скриншот или видео отзыва семьи после согласования публикации.", image: image("/assets/hero-campus.webp", "Кампус китайского университета") }, { title: "Каникулы в Китае", text: "Здесь разместим историю поездки, фото и видео группы с разрешения участников.", image: image("/assets/chengdu-family.webp", "Семья на каникулах в Китае") }, { title: "Китайский язык", text: "Здесь разместим отзыв ученика о занятиях и прогрессе в китайском языке.", image: image("/assets/hainan-language.webp", "Занятие китайским языком") }] },
+    content: {
+      title: "Кейсы", lead: "Добавим сюда реальные скриншоты, видео и истории семей после согласования публикации.",
+      items: [
+        { title: "Поступление в вуз", text: "Реальная история поступления в китайский вуз.", video: video("/assets/videos/18335854955128.mp4", "Видео о поступлении в вуз"), image: image("/assets/hero-campus.webp", "Кампус китайского университета"), isActive: true },
+        { title: "Каникулы в Китае", text: "Одно из любимых занятий на программе - фотосессия в национальных костюмах.", video: video("/assets/videos/8526131038840.mp4", "Видео о каникулах в Китае"), image: image("/assets/chengdu-family.webp", "Семья на каникулах в Китае"), isActive: true },
+        { title: "Китайский язык", text: "«Дети все такие умные, хорошенькие...», - преподаватель китайского языка поделилась впечатлениями об участии в нашем летнем лагере.", video: video("/assets/videos/18216247233144.mp4", "Видео о китайском языке"), image: image("/assets/hainan-language.webp", "Занятие китайским языком"), isActive: true },
+        { title: "Поддержка на каждом шаге", text: "Куратор рядом до, во время и после поездки.", video: video("/assets/videos/18216256932472.mp4", "Видео о сопровождении"), image: image("/assets/airport-support.webp", "Поддержка участников"), isActive: true },
+        { title: "Новый опыт в Китае", text: "Еще одна реальная история участника программы Бай Цзэ.", video: video("/assets/videos/18216264469112.mp4", "Видео участника программы"), image: image("/assets/hero-campus.webp", "Участники программы"), isActive: true },
+      ],
+    },
   },
   {
     id: "quiz", type: "quiz", title: "Персональный подбор", isActive: true,
-    content: { eyebrow: "Персональный подбор", title: "Не знаете, с чего начать?", lead: "Ответьте на 5 вопросов. Мы предложим программу под возраст и цели ребёнка.", button: "Подобрать программу", steps: quizSteps },
+    content: { eyebrow: "Персональный подбор", title: "Не знаете, с чего начать?", lead: "Ответьте на 5 вопросов. Мы предложим программу под возраст и цели ребёнка.", button: "Подобрать программу", minuteText: "1 минута", privacyText: "Ваши данные защищены", steps: quizSteps, resultTitle: "Подборка формируется", resultText: "Менеджер напишет вам в рабочее время и пришлёт варианты с актуальными датами и стоимостью.", resultButton: "Готово", nameLabel: "Ваше имя", phoneLabel: "Телефон", consentLabel: "Согласен на обработку персональных данных", submitLabel: "Получить подбор программ" },
   },
   {
     id: "contacts", type: "contacts", title: "Контакты", isActive: true,
@@ -104,7 +129,34 @@ const defaultBlocks = [
   },
   {
     id: "footer", type: "footer", title: "Подвал", isActive: true,
-    content: { text: "Учеба, языковые программы и каникулы в Китае с полным сопровождением.", links: [{ label: "Университеты", href: "#universities" }, { label: "Как поступить", href: "#university" }, { label: "Визы", href: "#visa" }, { label: "Каникулы", href: "#programs" }, { label: "Сопровождение", href: "#safety" }, { label: "Китайский язык", href: "#language" }], copyright: "© 2026 Бай Цзэ", address: "Краснодар, ул. Красная 160", legalName: "ИП Лазаренко Наталья Леонидовна", inn: "ИНН 231009681142" },
+    content: { text: "Учеба, языковые программы и каникулы в Китае с полным сопровождением.", directionsTitle: "Направления", contactsTitle: "Связаться", documentsTitle: "Документы", privacyLabel: "Политика ПДн", offerLabel: "Публичная оферта", links: [{ label: "Университеты", href: "#universities" }, { label: "Как поступить", href: "#university" }, { label: "Визы", href: "#visa" }, { label: "Каникулы", href: "#programs" }, { label: "Сопровождение", href: "#safety" }, { label: "Китайский язык", href: "#language" }], copyright: "© 2026 Бай Цзэ", address: "Краснодар, ул. Красная 160", legalName: "ИП Лазаренко Наталья Леонидовна", inn: "ИНН 231009681142" },
+  },
+  {
+    id: "forms", type: "forms", title: "Формы и системные тексты", isActive: true,
+    content: {
+      leadIntro: "Оставьте контакты. Первая консультация бесплатна.", nameLabel: "Ваше имя", phoneLabel: "Телефон", goalLabel: "Направление", goalPlaceholder: "Выберите направление", consentLabel: "Согласен с политикой обработки персональных данных", validationError: "Заполните имя, телефон и подтвердите согласие на обработку данных.", submitLabel: "Отправить заявку", loadingLabel: "Отправляем...", successTitle: "Спасибо!", successText: "Заявка подготовлена. Менеджер свяжется с вами в рабочее время.", successButton: "Готово",
+    },
+  },
+  {
+    id: "legal", type: "legal", title: "Юридические документы", isActive: true,
+    content: {
+      privacyTitle: "Политика обработки персональных данных", offerTitle: "Публичная оферта", notice: "Редакция от 12 августа 2026 года. Черновик для юридической проверки.",
+      privacySections: [
+        { title: "1. Оператор и общие положения", text: "Оператор: ИП Лазаренко Наталья Леонидовна, ИНН 231009681142, бренд «Бай Цзэ». Контакт для обращений: china@baize.ru. Политика применяется к данным, полученным через формы сайта, телефон, электронную почту и мессенджеры." },
+        { title: "2. Какие данные обрабатываются", text: "Имя, номер телефона, адрес электронной почты, выбранное направление, ответы квиза, источник обращения и технические данные, необходимые для работы сайта. Данные о здоровье, документах и несовершеннолетних не должны передаваться через общую форму." },
+        { title: "3. Цели и основания", text: "Ответ на обращение, подбор программы, подготовка консультации, исполнение договора и выполнение требований закона. Обработка на основании согласия прекращается после его отзыва, если иное хранение не требуется законом или договором." },
+        { title: "4. Передача и хранение", text: "Данные могут передаваться подрядчикам по CRM, хостингу и связи только в необходимом объёме и при наличии договорных мер защиты. До подключения этих систем их точный перечень и сроки хранения необходимо утвердить." },
+        { title: "5. Права пользователя", text: "Пользователь вправе запросить сведения об обработке, уточнение, блокирование или удаление данных, а также отозвать согласие, направив письмо оператору." },
+      ],
+      offerSections: [
+        { title: "1. Статус документа", text: "Эта страница содержит предварительные условия оказания консультационных и сопроводительных услуг. Конкретная программа, цена, сроки, состав услуг и правила возврата фиксируются в индивидуальном договоре или счёте до оплаты." },
+        { title: "2. Исполнитель", text: "ИП Лазаренко Наталья Леонидовна, ИНН 231009681142, бренд «Бай Цзэ», Краснодар, ул. Красная 160, офис 307." },
+        { title: "3. Предмет", text: "Исполнитель оказывает услуги по подбору зарубежных образовательных и каникулярных программ, информационному, документальному и визовому сопровождению в согласованном объёме." },
+        { title: "4. Цена и заключение договора", text: "Размещение заявки не создаёт обязанности по оплате. Договор считается заключённым после согласования существенных условий и совершения заказчиком предусмотренного платежа." },
+        { title: "5. Ответственность", text: "Исполнитель отвечает за собственные обязательства в согласованном объёме. Решения вузов, консульств, перевозчиков и принимающих организаций находятся вне прямого контроля исполнителя, если иное прямо не зафиксировано договором." },
+        { title: "6. Возвраты и споры", text: "Условия отказа, возврата и расчёта фактически понесённых расходов определяются индивидуальным договором и применимым законодательством РФ." },
+      ],
+    },
   },
 ];
 
@@ -125,13 +177,68 @@ function mergeValue(base, override) {
   return override;
 }
 
+function mergeCollection(defaultItems, remoteItems) {
+  if (!Array.isArray(remoteItems)) return defaultItems;
+  return remoteItems.map((item, index) => (
+    item && typeof item === "object" && !Array.isArray(item)
+      ? mergeValue(defaultItems[index] || {}, item)
+      : item
+  ));
+}
+
+function normalizeMediaItem(item, fallbackAlt = "") {
+  if (typeof item === "string") return image(item, fallbackAlt);
+  if (!item || typeof item !== "object") return item;
+  if (item.src && !item.path) return { ...item, kind: item.kind || "image", path: item.src, alt: item.alt || fallbackAlt };
+  if (item.path) return { ...item, kind: item.kind || "image", alt: item.alt || fallbackAlt };
+  return item;
+}
+
+function normalizeProgram(program) {
+  if (!program || typeof program !== "object") return program;
+  return {
+    ...program,
+    image: normalizeMediaItem(program.image, program.title || ""),
+    cardImage: normalizeMediaItem(program.cardImage, program.title || ""),
+    gallery: Array.isArray(program.gallery) ? program.gallery.map((item) => normalizeMediaItem(item, program.title || "")) : [],
+  };
+}
+
+function mergeBlock(defaultBlock, remoteBlock) {
+  const merged = mergeValue(defaultBlock, remoteBlock);
+  const defaultContent = defaultBlock.content || {};
+  const remoteContent = remoteBlock?.content || {};
+
+  if (["programs", "reviews", "cases"].includes(defaultBlock.id)) {
+    const key = defaultBlock.id === "programs" ? "programs" : "items";
+    merged.content[key] = mergeCollection(defaultContent[key] || [], remoteContent[key]);
+
+    if (defaultBlock.id === "programs") {
+      merged.content[key] = merged.content[key].map(normalizeProgram);
+    }
+
+    // Older versions stored only a placeholder image for cases. Keep the
+    // current, approved case content on the public site until it is saved once
+    // from the new editor; after that every field stays editable normally.
+    if (defaultBlock.id === "cases" && Array.isArray(remoteContent[key])) {
+      merged.content[key] = remoteContent[key].map((item, index) => (
+        item && typeof item === "object" && Object.prototype.hasOwnProperty.call(item, "video")
+          ? mergeValue(defaultContent[key]?.[index] || {}, item)
+          : defaultContent[key]?.[index] || item
+      ));
+    }
+  }
+
+  return merged;
+}
+
 export function mergeCmsData(remote) {
   const fallback = cloneCmsData(defaultCmsData);
   if (!remote || remote.site?.id !== fallback.site.id || !remote.page?.blocks) return fallback;
   const remoteBlocks = new Map(remote.page.blocks.map((block) => [block.id, block]));
   fallback.site = mergeValue(fallback.site, remote.site);
   fallback.page = mergeValue(fallback.page, remote.page);
-  fallback.page.blocks = fallback.page.blocks.map((block) => remoteBlocks.has(block.id) ? mergeValue(block, remoteBlocks.get(block.id)) : block);
+  fallback.page.blocks = fallback.page.blocks.map((block) => remoteBlocks.has(block.id) ? mergeBlock(block, remoteBlocks.get(block.id)) : block);
   return fallback;
 }
 

@@ -539,23 +539,34 @@ function block_changed(array $block, string $title, string $contentJson, string 
 
 function upload_media(): void
 {
-    if (empty($_FILES['image']) || !is_array($_FILES['image'])) {
-        json_response(['ok' => false, 'message' => 'Image is required'], 422);
+    $upload = $_FILES['media'] ?? $_FILES['image'] ?? null;
+    if (empty($upload) || !is_array($upload)) {
+        json_response(['ok' => false, 'message' => 'Media file is required'], 422);
     }
 
-    $file = $_FILES['image'];
+    $file = $upload;
     if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
         json_response(['ok' => false, 'message' => 'Upload failed'], 422);
     }
 
     $config = app_config()['uploads'] ?? [];
-    $maxSize = (int)($config['max_size'] ?? (5 * 1024 * 1024));
+    $maxSize = max((int)($config['max_size'] ?? 0), 100 * 1024 * 1024);
     if ((int)$file['size'] > $maxSize) {
         json_response(['ok' => false, 'message' => 'File is too large'], 422);
     }
 
     $mimeType = detect_mime_type((string)$file['tmp_name']);
-    $allowed = $config['allowed_types'] ?? [];
+    $defaultAllowed = [
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/webp' => 'webp',
+        'image/gif' => 'gif',
+        'image/svg+xml' => 'svg',
+        'video/mp4' => 'mp4',
+        'video/webm' => 'webm',
+        'video/quicktime' => 'mov',
+    ];
+    $allowed = array_merge($defaultAllowed, $config['allowed_types'] ?? []);
     if (!isset($allowed[$mimeType])) {
         json_response(['ok' => false, 'message' => 'Unsupported image type'], 422);
     }
