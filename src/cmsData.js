@@ -4,7 +4,7 @@ export const ADMIN_LOGIN = "admin@site.local";
 export const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 export const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/svg+xml"];
 
-import { programs, quizSteps, faqGroups, universitySteps, universityGroups, visaSteps, yingkouGallery } from "./data.js";
+import { programs, programDetails, quizSteps, faqGroups, universitySteps, universityGroups, visaSteps, yingkouGallery } from "./data.js";
 
 const image = (path, alt = "") => ({ kind: "image", path, alt });
 const video = (path, label = "") => ({ kind: "video", path, label });
@@ -196,11 +196,19 @@ function normalizeMediaItem(item, fallbackAlt = "") {
 
 function normalizeProgram(program) {
   if (!program || typeof program !== "object") return program;
+  const fallbackGallery = program.slug === "yingkou-beijing" ? yingkouGallery : [];
+  const gallery = Array.isArray(program.gallery) && program.gallery.length
+    ? program.gallery
+    : fallbackGallery;
+  const details = Array.isArray(program.details) && program.details.length
+    ? program.details
+    : (programDetails[program.slug] || []);
   return {
     ...program,
     image: normalizeMediaItem(program.image, program.title || ""),
     cardImage: normalizeMediaItem(program.cardImage, program.title || ""),
-    gallery: Array.isArray(program.gallery) ? program.gallery.map((item) => normalizeMediaItem(item, program.title || "")) : [],
+    gallery: gallery.map((item) => normalizeMediaItem(item, program.title || "")),
+    details,
   };
 }
 
