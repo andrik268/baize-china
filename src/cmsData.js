@@ -203,10 +203,19 @@ function normalizeProgram(program) {
   const details = Array.isArray(program.details) && program.details.length
     ? program.details
     : (programDetails[program.slug] || []);
+  const normalizedCardImage = normalizeMediaItem(program.cardImage, program.title || "");
+  const legacyYingkouPreviews = [
+    "/assets/cards/hainan-language.webp",
+    "/assets/hainan-language.webp",
+    yingkouGallery[0]?.src,
+  ];
+  const cardImage = program.slug === "yingkou-beijing" && legacyYingkouPreviews.includes(normalizedCardImage?.path)
+    ? image("/assets/yingkou/preview.png", program.title || "")
+    : normalizedCardImage;
   return {
     ...program,
     image: normalizeMediaItem(program.image, program.title || ""),
-    cardImage: normalizeMediaItem(program.cardImage, program.title || ""),
+    cardImage,
     gallery: gallery.map((item) => normalizeMediaItem(item, program.title || "")),
     details,
   };

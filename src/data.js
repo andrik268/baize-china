@@ -54,7 +54,7 @@ export const programs = [
     meta: "Лето | дети и взрослые",
     description: "Море, языковая практика и Universal Beijing.",
     image: yingkouGallery[0].src,
-    cardImage: yingkouGallery[0].src,
+    cardImage: "/assets/yingkou/preview.png",
     gallery: yingkouGallery,
     fit: "Отдых, язык и семейная программа",
     details: programDetails["yingkou-beijing"],
