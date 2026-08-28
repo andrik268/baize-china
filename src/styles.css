@@ -801,6 +801,10 @@ a:focus-visible,
   grid-column: 2 / span 2;
 }
 
+.program-card--6 {
+  grid-column: 2 / span 2;
+}
+
 .program-card > img,
 .program-card__shade {
   position: absolute;
@@ -2262,6 +2266,7 @@ a:focus-visible,
   .program-grid { grid-template-columns: 1.2fr 1fr; grid-template-rows: 430px 310px 310px 310px; grid-auto-rows: 310px; }
   .program-card--1 { grid-row: 1; grid-column: 1 / span 2; }
   .program-card--4 { grid-column: auto; }
+  .program-card--6 { grid-column: auto; }
   .study-abroad__heading { gap: 36px; }
   .universities__intro { gap: 42px; }
   .about__grid { grid-template-columns: 0.65fr 1.35fr; }
