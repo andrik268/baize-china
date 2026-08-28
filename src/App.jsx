@@ -34,6 +34,43 @@ const MAX_HREF = "https://max.ru/u/f9LHodD0cOIIDx6pG5WILnOJudHFpeJU2O83YpgmMthMi
 const MAX_CHANNEL_HREF = "https://max.ru/join/_iffpxt8pk9Rf29rOX1swElr4iSKT22FMtNA6yUC_NE";
 const VK_HREF = "https://vk.ru/study.holidays";
 
+// Keep the proven public presentation available even when an older CMS
+// snapshot has no media references yet. Once a client adds a media field in
+// the new editor, that selected file is used instead of the fallback.
+const CASE_VIDEO_SOURCES = [
+  "/assets/videos/18335854955128.mp4",
+  "/assets/videos/8526131038840.mp4",
+  "/assets/videos/18216247233144.mp4",
+  "/assets/videos/18216256932472.mp4",
+  "/assets/videos/18216264469112.mp4",
+];
+
+const CASE_VIDEO_FALLBACKS = [
+  { title: "Поступление в вуз", text: "Реальная история поступления в китайский вуз." },
+  { title: "Каникулы в Китае", text: "Одно из любимых занятий на программе — фотосессия в национальных костюмах." },
+  { title: "Китайский язык", text: "«Дети все такие умные, хорошенькие...», — преподаватель китайского языка поделилась впечатлениями об участии в нашем летнем лагере." },
+  { title: "Поддержка на каждом шаге", text: "Куратор рядом до, во время и после поездки." },
+  { title: "Новый опыт в Китае", text: "Еще одна реальная история участника программы Бай Цзэ." },
+];
+
+const REVIEW_VIDEO_SOURCES = [
+  "/assets/videos/18216269384312.mp4",
+  "/assets/videos/18216273709688.mp4",
+  "/assets/videos/18216283802232.mp4",
+];
+
+const REVIEW_VIDEO_FALLBACKS = [
+  { title: "Отзыв участника", text: "Личная история о поездке и впечатлениях от программы." },
+  { title: "Отзыв семьи", text: "Что особенно понравилось родителям и студентам." },
+  { title: "Опыт обучения", text: "Реальный отзыв о поддержке и результатах программы." },
+];
+
+const CASE_CONTENT_OVERRIDES = [
+  CASE_VIDEO_FALLBACKS[0],
+  CASE_VIDEO_FALLBACKS[1],
+  CASE_VIDEO_FALLBACKS[2],
+];
+
 function blockContent(cms, id) {
   return getBlock(cms, id)?.content || getBlock(defaultCmsData, id).content;
 }
@@ -375,7 +412,8 @@ function Faq() {
 
 function Reviews() {
   const cms = useCms(); const c = blockContent(cms, "reviews");
-  const items = (c.items || []).filter((item) => item.isActive !== false && item.video?.path);
+  const cmsItems = Array.isArray(c.items) ? c.items.filter((item) => item.isActive !== false && item.video?.path) : [];
+  const items = cmsItems.length ? cmsItems : REVIEW_VIDEO_FALLBACKS.map((item, index) => ({ ...item, video: { path: REVIEW_VIDEO_SOURCES[index], kind: "video" } }));
   const [activeReview, setActiveReview] = useState(0);
   const activeItem = items[activeReview] || items[0];
   const moveReview = (offset) => setActiveReview((value) => (value + offset + items.length) % items.length);
@@ -433,7 +471,13 @@ function Reviews() {
 
 function Cases() {
   const cms = useCms(); const c = blockContent(cms, "cases"); const icons = [GraduationCap, GlobeHemisphereEast, Translate];
-  const items = (c.items || []).filter((item) => item.isActive !== false);
+  const cmsItems = Array.isArray(c.items) ? c.items : [];
+  const items = CASE_VIDEO_SOURCES.map((fallbackVideo, index) => {
+    const cmsItem = cmsItems[index];
+    const media = cmsItem && Object.prototype.hasOwnProperty.call(cmsItem, "video") ? cmsItem.video?.path : fallbackVideo;
+    const legacyCopy = cmsItem && Object.prototype.hasOwnProperty.call(cmsItem, "video") ? {} : CASE_CONTENT_OVERRIDES[index];
+    return { ...CASE_VIDEO_FALLBACKS[index], ...cmsItem, ...legacyCopy, video: media ? { path: media } : null };
+  }).filter((item) => item.isActive !== false);
   return (
     <section className="section cases" id="cases" aria-labelledby="cases-title">
       <div className="shell">
