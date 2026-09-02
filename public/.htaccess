@@ -2,7 +2,15 @@ DirectoryIndex index.html
 
 RewriteEngine On
 
+# HSTS is safe to emit from the Apache-compatible layer; the HTTPS redirect is
+# managed by the corresponding switch in the Timeweb hosting panel.
+<IfModule mod_headers.c>
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+</IfModule>
+
 RewriteRule ^api(/.*)?$ api/index.php [L,QSA]
+
+RewriteRule ^privacy-policy/?$ privacy-policy.html [L]
 
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d

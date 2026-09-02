@@ -121,7 +121,7 @@ const defaultBlocks = [
   },
   {
     id: "quiz", type: "quiz", title: "Персональный подбор", isActive: true,
-    content: { eyebrow: "Персональный подбор", title: "Не знаете, с чего начать?", lead: "Ответьте на 5 вопросов. Мы предложим программу под возраст и цели ребёнка.", button: "Подобрать программу", minuteText: "1 минута", privacyText: "Ваши данные защищены", steps: quizSteps, resultTitle: "Подборка формируется", resultText: "Менеджер напишет вам в рабочее время и пришлёт варианты с актуальными датами и стоимостью.", resultButton: "Готово", nameLabel: "Ваше имя", phoneLabel: "Телефон", consentLabel: "Согласен на обработку персональных данных", submitLabel: "Получить подбор программ" },
+    content: { eyebrow: "Персональный подбор", title: "Не знаете, с чего начать?", lead: "Ответьте на 5 вопросов. Мы предложим программу под возраст и цели ребёнка.", button: "Подобрать программу", minuteText: "1 минута", privacyText: "Ваши данные защищены", steps: quizSteps, resultTitle: "Подборка формируется", resultText: "Менеджер напишет вам в рабочее время и пришлёт варианты с актуальными датами и стоимостью.", resultButton: "Готово", nameLabel: "Ваше имя", phoneLabel: "Телефон", consentLabel: "Нажимая на кнопку, я даю согласие на обработку персональных данных и соглашаюсь с Политикой конфиденциальности.", submitLabel: "Получить подбор программ" },
   },
   {
     id: "contacts", type: "contacts", title: "Контакты", isActive: true,
@@ -129,13 +129,13 @@ const defaultBlocks = [
   },
   {
     id: "footer", type: "footer", title: "Подвал", isActive: true,
-    content: { text: "Учеба, языковые программы и каникулы в Китае с полным сопровождением.", directionsTitle: "Направления", contactsTitle: "Связаться", documentsTitle: "Документы", privacyLabel: "Политика ПДн", offerLabel: "Публичная оферта", links: [{ label: "Университеты", href: "#universities" }, { label: "Как поступить", href: "#university" }, { label: "Визы", href: "#visa" }, { label: "Каникулы", href: "#programs" }, { label: "Сопровождение", href: "#safety" }, { label: "Китайский язык", href: "#language" }], copyright: "© 2026 Бай Цзэ", address: "Краснодар, ул. Красная 160", legalName: "ИП Лазаренко Наталья Леонидовна", inn: "ИНН 231009681142" },
+    content: { text: "Учеба, языковые программы и каникулы в Китае с полным сопровождением.", directionsTitle: "Направления", contactsTitle: "Связаться", documentsTitle: "Документы", privacyLabel: "Политика ПДн", offerLabel: "Публичная оферта", links: [{ label: "Университеты", href: "#universities" }, { label: "Как поступить", href: "#university" }, { label: "Визы", href: "#visa" }, { label: "Каникулы", href: "#programs" }, { label: "Сопровождение", href: "#safety" }, { label: "Китайский язык", href: "#language" }], copyright: "© 2026 Бай Цзэ", address: "Краснодар, ул. Красная 160", legalName: "ИП Лазаренко Наталья Леонидовна", inn: "ИНН 231009681142", ogrn: "ОГРН: уточняется" },
   },
   {
     id: "forms", type: "forms", title: "Формы и системные тексты", isActive: true,
     content: {
-      leadIntro: "Оставьте контакты. Первая консультация бесплатна.", nameLabel: "Ваше имя", phoneLabel: "Телефон", goalLabel: "Направление", goalPlaceholder: "Выберите направление", consentLabel: "Согласен с политикой обработки персональных данных", validationError: "Заполните имя, телефон и подтвердите согласие на обработку данных.", submitLabel: "Отправить заявку", loadingLabel: "Отправляем...", successTitle: "Спасибо!", successText: "Заявка подготовлена. Менеджер свяжется с вами в рабочее время.", successButton: "Готово",
-      reviewTitle: "Оставить отзыв", reviewIntro: "Расскажите, как прошла поездка или обучение. Отзыв появится на сайте после проверки менеджером.", reviewNameLabel: "Ваше имя", reviewContactLabel: "Телефон или email (необязательно)", reviewProgramLabel: "Программа", reviewProgramPlaceholder: "Выберите программу", reviewRatingLabel: "Оценка", reviewTextLabel: "Ваш отзыв", reviewConsentLabel: "Согласен на обработку персональных данных и публикацию отзыва после проверки", reviewValidationError: "Заполните имя, отзыв и подтвердите согласие на публикацию.", reviewSubmitLabel: "Отправить отзыв", reviewSuccessTitle: "Спасибо за отзыв!", reviewSuccessText: "Отзыв отправлен на проверку и появится на сайте после согласования.",
+      leadIntro: "Оставьте контакты. Первая консультация бесплатна.", nameLabel: "Ваше имя", phoneLabel: "Телефон", goalLabel: "Направление", goalPlaceholder: "Выберите направление", consentLabel: "Нажимая на кнопку, я даю согласие на обработку персональных данных и соглашаюсь с Политикой конфиденциальности.", validationError: "Заполните имя, телефон и подтвердите согласие на обработку данных.", submitLabel: "Отправить заявку", loadingLabel: "Отправляем...", successTitle: "Спасибо!", successText: "Заявка подготовлена. Менеджер свяжется с вами в рабочее время.", successButton: "Готово",
+      reviewTitle: "Оставить отзыв", reviewIntro: "Расскажите, как прошла поездка или обучение. Отзыв появится на сайте после проверки менеджером.", reviewNameLabel: "Ваше имя", reviewContactLabel: "Телефон или email (необязательно)", reviewProgramLabel: "Программа", reviewProgramPlaceholder: "Выберите программу", reviewRatingLabel: "Оценка", reviewTextLabel: "Ваш отзыв", reviewConsentLabel: "Нажимая на кнопку, я даю согласие на обработку персональных данных и соглашаюсь с Политикой конфиденциальности.", reviewValidationError: "Заполните имя, отзыв и подтвердите согласие на публикацию.", reviewSubmitLabel: "Отправить отзыв", reviewSuccessTitle: "Спасибо за отзыв!", reviewSuccessText: "Отзыв отправлен на проверку и появится на сайте после согласования.",
     },
   },
   {
@@ -163,7 +163,7 @@ const defaultBlocks = [
 
 export const defaultCmsData = {
   site: { id: "site-baize", name: "Бай Цзэ | Учеба и каникулы в Китае", domain: "china-baize.ru" },
-  page: { id: "home", siteId: "site-baize", title: "Главная", slug: "/", seoTitle: "Бай Цзэ | Учеба и каникулы в Китае", seoDescription: "Поступление в китайские университеты, языковые курсы и каникулы в Китае с полным сопровождением.", blocks: defaultBlocks },
+  page: { id: "home", siteId: "site-baize", title: "Главная", slug: "/", seoTitle: "Учеба и каникулы в Китае | Бай Цзэ: поступление", seoDescription: "Учеба и каникулы в Китае с Бай Цзэ. Помогаем с поступлением в вузы, оформлением виз и грантов. Полное сопровождение из России.", blocks: defaultBlocks },
   // Initial publications make the new news section useful immediately. They
   // are ordinary CMS records, so an administrator can edit, hide or replace
   // every title, date, description and cover from the News section.

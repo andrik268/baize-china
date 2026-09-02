@@ -101,6 +101,9 @@ const FALLBACK_SOCIALS = [
   { label: "ВКонтакте", href: VK_HREF, icon: "vk" },
 ];
 
+const DEFAULT_CONSENT_TEXT = "Нажимая на кнопку, я даю согласие на обработку персональных данных и соглашаюсь с Политикой конфиденциальности.";
+const DEFAULT_COOKIE_TEXT = "Мы используем файлы cookie для улучшения работы сайта и анализа трафика. Продолжая использовать сайт, вы соглашаетесь с нашей Политикой конфиденциальности.";
+
 function getSocials(cms) {
   return blockContent(cms, "contacts").socials || FALLBACK_SOCIALS;
 }
@@ -121,6 +124,16 @@ function formatNewsDate(value) {
   const parsed = new Date(value);
   if (Number.isNaN(parsed.getTime())) return String(value);
   return new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long", year: "numeric" }).format(parsed);
+}
+
+function ConsentCopy({ text }) {
+  const value = String(text || DEFAULT_CONSENT_TEXT);
+  const policyMarker = "Политикой конфиденциальности";
+  const markerIndex = value.indexOf(policyMarker);
+  if (markerIndex >= 0) {
+    return <>{value.slice(0, markerIndex)}<a href="/privacy-policy">{policyMarker}</a>{value.slice(markerIndex + policyMarker.length)}</>;
+  }
+  return <>{value} <a href="/privacy-policy">Политика конфиденциальности</a>.</>;
 }
 
 const SOCIAL_ICON_PATHS = {
@@ -688,7 +701,7 @@ function Footer({ setLegal }) {
         <div><Brand light /><p>{c.text}</p></div>
         <div><h3>{c.directionsTitle || "Направления"}</h3>{footerLinks.map((link) => <a href={link.href || "#top"} key={`${link.label}-${link.href}`}>{link.label}</a>)}</div>
         <div><h3>{c.contactsTitle || "Связаться"}</h3>{socials.map((social) => <a className="footer__social-link" href={social.href} target="_blank" rel="noreferrer" key={social.label}><SocialIcon name={social.icon} size={18} />{social.label}</a>)}</div>
-        <div><h3>{c.documentsTitle || "Документы"}</h3><button onClick={() => setLegal("privacy")}>{c.privacyLabel || "Политика ПДн"}</button><button onClick={() => setLegal("offer")}>{c.offerLabel || "Публичная оферта"}</button><p>{c.legalName}<br />{c.inn}</p></div>
+        <div><h3>{c.documentsTitle || "Документы"}</h3><a href="/privacy-policy">{c.privacyLabel || "Политика ПДн"}</a><button onClick={() => setLegal("offer")}>{c.offerLabel || "Публичная оферта"}</button><p>{c.legalName}<br />{c.inn}<br />{c.ogrn || "ОГРН: уточняется"}</p></div>
       </div>
       <div className="shell footer__bottom"><span>{c.copyright}</span><span>{c.address}</span></div>
     </footer>
@@ -744,7 +757,7 @@ function LeadForm({ title, onClose, defaultGoal = "" }) {
       <label>{c.nameLabel || "Ваше имя"}<input name="name" autoComplete="name" /></label>
       <label>{c.phoneLabel || "Телефон"}<input name="phone" inputMode="tel" autoComplete="tel" placeholder="+7 999 000-00-00" /></label>
       <label>{c.goalLabel || "Направление"}<select name="goal" defaultValue={defaultGoal}><option value="">{c.goalPlaceholder || "Выберите направление"}</option><option>Каникулы в Китае</option><option>Поступление в вуз</option><option>Визовое сопровождение</option><option>Китайский язык</option></select></label>
-      <label className="checkbox"><input type="checkbox" name="consent" /><span>{c.consentLabel || "Согласен с политикой обработки персональных данных"}</span></label>
+      <label className="checkbox"><input type="checkbox" name="consent" /><span><ConsentCopy text={c.consentLabel} /></span></label>
       {error && <p className="form-error" role="alert">{error}</p>}
       <button className="button button--wide" disabled={state === "loading"}>{state === "loading" ? (c.loadingLabel || "Отправляем...") : (c.submitLabel || "Отправить заявку")}</button>
     </form>
@@ -796,7 +809,7 @@ function ReviewForm({ onClose }) {
       <label>{forms.reviewProgramLabel || "Программа"}<select name="program" defaultValue=""><option value="">{forms.reviewProgramPlaceholder || "Выберите программу"}</option>{programs.filter((program) => program?.title).map((program) => <option key={program.slug || program.title}>{program.title}</option>)}</select></label>
       <label>{forms.reviewRatingLabel || "Оценка"}<select name="rating" defaultValue="5"><option value="5">★★★★★ Отлично</option><option value="4">★★★★ Очень хорошо</option><option value="3">★★★ Хорошо</option><option value="2">★★ Есть что улучшить</option><option value="1">★ Нужна обратная связь</option></select></label>
       <label>{forms.reviewTextLabel || "Ваш отзыв"}<textarea name="message" rows="5" placeholder="Напишите несколько предложений о вашем опыте" /></label>
-      <label className="checkbox"><input type="checkbox" name="consent" /><span>{forms.reviewConsentLabel || "Согласен на обработку персональных данных и публикацию отзыва после проверки"}</span></label>
+      <label className="checkbox"><input type="checkbox" name="consent" /><span><ConsentCopy text={forms.reviewConsentLabel} /></span></label>
       {error ? <p className="form-error" role="alert">{error}</p> : null}
       <button className="button button--wide" type="submit" disabled={state === "loading"}>{state === "loading" ? (forms.loadingLabel || "Отправляем...") : (forms.reviewSubmitLabel || "Отправить отзыв")}</button>
     </form>
@@ -894,7 +907,7 @@ function QuizModal({ onClose }) {
           <form onSubmit={(event) => { event.preventDefault(); const data = new FormData(event.currentTarget); submitLead({ name: data.get("name"), phone: data.get("phone"), message: "Персональный подбор программы", source: "quiz", fields: answers }).catch(() => null).finally(() => setSubmitted(true)); }}>
             <label>{c.nameLabel || "Ваше имя"}<input required name="name" autoComplete="name" /></label>
             <label>{c.phoneLabel || "Телефон"}<input required name="phone" autoComplete="tel" inputMode="tel" /></label>
-            <label className="checkbox"><input required type="checkbox" /><span>{c.consentLabel || "Согласен на обработку персональных данных"}</span></label>
+            <label className="checkbox"><input required type="checkbox" /><span><ConsentCopy text={c.consentLabel} /></span></label>
             <button className="button button--wide">{c.submitLabel || "Получить подбор программ"}</button>
           </form>
         </div>
@@ -915,6 +928,60 @@ function LegalModal({ type, onClose }) {
         {sections.map((section) => <div key={section.title}><h3>{section.title}</h3><p>{section.text}</p></div>)}
       </article>
     </Modal>
+  );
+}
+
+export function PrivacyPolicyPage() {
+  useEffect(() => {
+    document.title = "Политика обработки персональных данных | Бай Цзэ";
+    const description = document.querySelector('meta[name="description"]');
+    if (description) description.setAttribute("content", "Политика в отношении обработки персональных данных сайта Бай Цзэ.");
+  }, []);
+
+  return (
+    <main className="privacy-page">
+      <div className="shell privacy-page__inner">
+        <a className="privacy-page__brand" href="#top">
+          <span className="brand__mark" aria-hidden="true"><img src="/favicon.svg" alt="" /></span>
+          <span><strong>Бай Цзэ</strong><small>Учеба и каникулы в Китае</small></span>
+        </a>
+        <article className="privacy-page__card">
+          <p className="eyebrow">Документы</p>
+          <h1>Политика в отношении обработки персональных данных</h1>
+          <h2>1. Общие положения</h2>
+          <p>1.1. Настоящая Политика определяет порядок обработки и защиты персональных данных пользователей сайта https://china-baize.ru/ (далее — Сайт).</p>
+          <p>1.2. Оператором персональных данных является ИП Лазаренко Наталья Леонидовна, ИНН 231009681142, адрес: г. Краснодар, ул. Красная, 160, e-mail: kubancenter@mail.ru (далее — Оператор).</p>
+          <h2>2. Цели сбора персональных данных</h2>
+          <p>2.1. Обработка данных осуществляется исключительно в целях:</p>
+          <ul><li>предоставления консультаций по вопросам учебы и каникул в Китае;</li><li>оформления документов для поступления, виз и грантов;</li><li>отправки информационных и новостных материалов (при наличии согласия).</li></ul>
+          <h2>3. Объем и категории обрабатываемых данных</h2>
+          <p>3.1. Оператор может обрабатывать следующие данные пользователя: фамилия, имя, отчество; номер телефона; адрес электронной почты; данные, необходимые для оформления виз и поступления (по отдельному согласию).</p>
+          <h2>4. Права пользователя</h2>
+          <p>4.1. Пользователь имеет право на получение информации, касающейся обработки его персональных данных, а также на требование уточнения, блокирования или уничтожения данных, если они являются неполными, устаревшими или полученными незаконно.</p>
+          <h2>5. Контакты</h2>
+          <p>5.1. Все вопросы, связанные с обработкой персональных данных, можно направить по адресу: kubancenter@mail.ru или по телефону: +7 903 450 54 43.</p>
+          <p className="privacy-page__updated">Дата обновления: 02.09.2026</p>
+        </article>
+        <a className="privacy-page__back" href="/">Вернуться на сайт</a>
+      </div>
+    </main>
+  );
+}
+
+function CookieBanner() {
+  const [visible, setVisible] = useState(() => {
+    try { return window.localStorage.getItem("baize-cookie-consent") !== "accepted"; } catch { return true; }
+  });
+  if (!visible) return null;
+  const accept = () => {
+    try { window.localStorage.setItem("baize-cookie-consent", "accepted"); } catch { /* privacy banner can still close */ }
+    setVisible(false);
+  };
+  return (
+    <aside className="cookie-banner" role="status" aria-label="Уведомление о cookie">
+      <p>{DEFAULT_COOKIE_TEXT} <a href="/privacy-policy">Политикой конфиденциальности</a>.</p>
+      <button className="button button--small" type="button" onClick={accept}>Хорошо</button>
+    </aside>
   );
 }
 
@@ -974,6 +1041,7 @@ export default function App() {
       <div className="floating-social" aria-label="Быстрая связь">
         {socials.map((social) => <a className={`floating-social__${social.icon}`} href={social.href} target="_blank" rel="noreferrer" aria-label={`Открыть ${social.label}`} key={social.label}><SocialIcon name={social.icon} size={25} /></a>)}
       </div>
+      <CookieBanner />
       {quizOpen && <QuizModal onClose={() => setQuizOpen(false)} />}
       {program && <ProgramModal program={program} onClose={() => setProgram(null)} openForm={(title) => setForm({ title, goal: "Каникулы в Китае" })} />}
       {form && <Modal onClose={() => setForm(null)} className="form-modal"><LeadForm title={form.title} defaultGoal={form.goal} onClose={() => setForm(null)} /></Modal>}
