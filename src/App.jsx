@@ -25,6 +25,7 @@ import {
 import { loadRemoteCms, submitLead } from "./apiClient.js";
 import { defaultCmsData, getBlock, mergeCmsData } from "./cmsData.js";
 import { CmsContext, useCms } from "./cmsContext.js";
+import { initVkAdsPixel } from "./vkPixel.js";
 
 const CONTACT_PHONE = "+7 (903) 450-54-43";
 const CONTACT_PHONE_HREF = "tel:+79034505443";
@@ -996,6 +997,10 @@ export default function App() {
 
   useEffect(() => {
     loadRemoteCms().then((remote) => setCmsData(mergeCmsData(remote)));
+  }, []);
+
+  useEffect(() => {
+    initVkAdsPixel();
   }, []);
 
   useEffect(() => {
